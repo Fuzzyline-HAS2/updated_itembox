@@ -57,7 +57,34 @@ public:
   }
 
   void processResult(const QCResult &result) {
+    static String recentRuleIds[16];
+    static unsigned long recentRuleMs[16] = {0};
+    const unsigned long now = millis();
+    int slot = -1;
+
+    for (int i = 0; i < 16; ++i) {
+      if (recentRuleIds[i] == result.ruleId) {
+        slot = i;
+        break;
+      }
+      if (slot == -1 && recentRuleIds[i].length() == 0) {
+        slot = i;
+      }
+    }
+
+    if (slot == -1) {
+      slot = 0;
+    }
+
+    // Prevent high-frequency repeated logs per rule from starving the loop.
+    if (recentRuleIds[slot] == result.ruleId &&
+        (now - recentRuleMs[slot]) < 3000UL) {
+      return;
+    }
+
     Serial.println(result.toString());
+    recentRuleIds[slot] = result.ruleId;
+    recentRuleMs[slot] = now;
   }
 };
 

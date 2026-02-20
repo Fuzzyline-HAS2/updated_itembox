@@ -1,82 +1,138 @@
+static String pendingGameState = "";
+static String pendingDeviceState = "";
+static bool pendingGameStateChanged = false;
+static bool pendingDeviceStateChanged = false;
+
 void DataChanged() {
-  static StaticJsonDocument<1000>
-      cur; // 저장되어 있는 cur과 읽어온 my 값과 비교후 실행
-  if ((String)(const char *)my["game_state"] !=
-      (String)(const char *)cur["game_state"]) {
-    if ((String)(const char *)my["game_state"] == "setting") {
-      SettingFunc();
-    } else if ((String)(const char *)my["game_state"] == "ready") {
-      ReadyFunc();
-    } else if ((String)(const char *)my["game_state"] == "activate") {
-      ActivateFunc();
-    }
+  static StaticJsonDocument<1000> cur;
+  String myGameState = (String)(const char *)my["game_state"];
+  String curGameState = (String)(const char *)cur["game_state"];
+  if (myGameState != curGameState) {
+    pendingGameState = myGameState;
+    pendingGameStateChanged = true;
   }
-  if ((String)(const char *)my["device_state"] !=
-      (String)(const char *)cur["device_state"]) {
-    if ((String)(const char *)my["device_state"] == "activate") {
-      ActivateFunc();
-    } else if ((String)(const char *)my["device_state"] == "used") {
-      if (itemBoxUsed == false) {
-        transitionTo(ItemBoxState::USED);
-        BoxOpen();
-        AllNeoOn(RED);
-        sendCommand("page pgItemTaken");
-        ptrCurrentMode = WaitFunc;
-        ptrRfidMode = WaitFunc;
-        itemBoxUsed = true;
-        BlinkTimer.deleteTimer(blinkTimerId);
-        GameTimer.deleteTimer(gameTimerId);
-      }
-    } else if ((String)(const char *)my["device_state"] ==
-               "open") { // 노브 puzzle 끝난상태
-      if (itemBoxSelfOpen ==
-          false) { // 플레이어가 스스로 열었으면 true 여서 이미 열었다는 의미
-        transitionTo(ItemBoxState::OPEN);
-        Serial.println("PuzzleSolved");
-        AllNeoOn(BLUE);
-        sendCommand("page pgItemOpen");
-        delay(10);
-        sendCommand("wOutTagged.en=1");
-        ExpSend();
-        BatteryPackSend();
-        BoxOpen();
-        lightColor(pixels[INNER], color[YELLOW]);
-        ptrCurrentMode = RfidLoopInner;
-        ptrRfidMode = ItemTook;
-        BlinkTimer.deleteTimer(blinkTimerId);
-        BlinkTimerStart(INNER, YELLOW); // 내부태그 노란색 점멸 시작
-        GameTimer.deleteTimer(
-            gameTimerId); // 엔코더 다 푼 이후에는 로그아웃 없이 현 상태 유지
-        itemBoxSelfOpen = true;
-      }
-    } else if ((String)(const char *)my["device_state"] == "close") {
-      transitionTo(ItemBoxState::CLOSE);
-      BoxClose();
-    } else if ((String)(const char *)my["device_state"] == "repaired_all") {
-      transitionTo(ItemBoxState::REPAIRED_ALL);
-      ptrCurrentMode = WaitFunc;
-      ptrRfidMode = WaitFunc;
-      AllNeoOn(BLUE);
-      BoxOpen();
-      sendCommand("page pgEscapeOpen");
-    } else if ((String)(const char *)my["device_state"] == "player_win") {
-      transitionTo(ItemBoxState::PLAYER_WIN);
-      ptrCurrentMode = WaitFunc;
-      ptrRfidMode = WaitFunc;
-      AllNeoOn(BLUE);
-      BoxOpen();
-      sendCommand("page pgPlayerWin");
-    } else if ((String)(const char *)my["device_state"] == "player_lose") {
-      transitionTo(ItemBoxState::PLAYER_LOSE);
-      ptrCurrentMode = WaitFunc;
-      ptrRfidMode = WaitFunc;
-      AllNeoOn(RED);
-      BoxOpen();
-      sendCommand("page pgPlayerLose");
-    }
+
+  String myDeviceState = (String)(const char *)my["device_state"];
+  String curDeviceState = (String)(const char *)cur["device_state"];
+  if (myDeviceState != curDeviceState) {
+    pendingDeviceState = myDeviceState;
+    pendingDeviceStateChanged = true;
   }
-  cur = my; // cur 데이터 그룹에 현재 읽어온 데이터 저장
+
+  cur = my;
 }
+
+void ProcessServerStateChanges() {
+  if (pendingGameStateChanged) {
+    pendingGameStateChanged = false;
+    if (pendingGameState == "setting") {
+      SettingFunc();
+    } else if (pendingGameState == "ready") {
+      ReadyFunc();
+    } else if (pendingGameState == "activate") {
+      ActivateFunc();
+    }
+  }
+
+  if (!pendingDeviceStateChanged) {
+    return;
+  }
+
+  pendingDeviceStateChanged = false;
+  if (pendingDeviceState == "activate") {
+    ActivateFunc();
+  } else if (pendingDeviceState == "used") {
+    if (itemBoxUsed == false) {
+      transitionTo(ItemBoxState::USED);
+      BoxOpen();
+      AllNeoOn(RED);
+      sendCommand("page pgItemTaken");
+      ptrCurrentMode = WaitFunc;
+      ptrRfidMode = WaitFunc;
+      itemBoxUsed = true;
+      BlinkTimer.deleteTimer(blinkTimerId);
+      GameTimer.deleteTimer(gameTimerId);
+    }
+  } else if (pendingDeviceState == "open") {
+    if (itemBoxSelfOpen == false) {
+      transitionTo(ItemBoxState::OPEN);
+      Serial.println("PuzzleSolved");
+      AllNeoOn(BLUE);
+      sendCommand("page pgItemOpen");
+      delay(10);
+      sendCommand("wOutTagged.en=1");
+      ExpSend();
+      BatteryPackSend();
+      BoxOpen();
+      lightColor(pixels[INNER], color[YELLOW]);
+      ptrCurrentMode = RfidLoopInner;
+      ptrRfidMode = ItemTook;
+      BlinkTimer.deleteTimer(blinkTimerId);
+      BlinkTimerStart(INNER, YELLOW);
+      GameTimer.deleteTimer(gameTimerId);
+      itemBoxSelfOpen = true;
+    }
+  } else if (pendingDeviceState == "close") {
+    transitionTo(ItemBoxState::CLOSE);
+    BoxClose();
+  } else if (pendingDeviceState == "repaired_all") {
+    transitionTo(ItemBoxState::REPAIRED_ALL);
+    ptrCurrentMode = WaitFunc;
+    ptrRfidMode = WaitFunc;
+    AllNeoOn(BLUE);
+    BoxOpen();
+    sendCommand("page pgEscapeOpen");
+  } else if (pendingDeviceState == "player_win") {
+    transitionTo(ItemBoxState::PLAYER_WIN);
+    ptrCurrentMode = WaitFunc;
+    ptrRfidMode = WaitFunc;
+    AllNeoOn(BLUE);
+    BoxOpen();
+    sendCommand("page pgPlayerWin");
+  } else if (pendingDeviceState == "player_lose") {
+    transitionTo(ItemBoxState::PLAYER_LOSE);
+    ptrCurrentMode = WaitFunc;
+    ptrRfidMode = WaitFunc;
+    AllNeoOn(RED);
+    BoxOpen();
+    sendCommand("page pgPlayerLose");
+  }
+}
+
+void enqueueReadyBatterySends() {
+  readySendPending = true;
+  readySendIndex = HI1;
+  readySendLastMs = 0;
+}
+
+void ReadySendService() {
+  if (!enableReadyPackSync) {
+    readySendPending = false;
+    return;
+  }
+
+  if (!readySendPending) return;
+
+  unsigned long now = millis();
+  if (readySendLastMs != 0 && (now - readySendLastMs) < readySendIntervalMs) {
+    return;
+  }
+
+  while (readySendIndex <= FI2) {
+    if (batteryPackRnd[readySendIndex].nVal != 0) {
+      has2wifi.Send(batteryPackRnd[readySendIndex].strDevice, "battery_pack",
+                    (String)batteryPackRnd[readySendIndex].nVal);
+      readySendLastMs = now;
+      readySendIndex++;
+      yield();
+      return;
+    }
+    readySendIndex++;
+  }
+
+  readySendPending = false;
+}
+
 void WaitFunc(void) {}
 void SettingFunc(void) {
   transitionTo(ItemBoxState::SETTING);
@@ -88,8 +144,8 @@ void SettingFunc(void) {
   answerCnt = 0;
   ptrCurrentMode = WaitFunc;
   ptrRfidMode = WaitFunc;
-  itemBoxSelfOpen = false; // 퍼즐함수 성공했는지 확인하는 변수초기화
-  itemBoxUsed = false; // 박스 사용했는지 확인하는 변수 초기화
+  itemBoxSelfOpen = false;
+  itemBoxUsed = false;
   BlinkTimer.deleteTimer(blinkTimerId);
   GameTimer.deleteTimer(gameTimerId);
   ledcWrite(VIBRATION_RANGE_PIN, 0);
@@ -104,8 +160,8 @@ void ActivateFunc(void) {
   BoxClose();
   ptrCurrentMode = RfidLoopOutter;
   ptrRfidMode = StartPuzzle;
-  itemBoxSelfOpen = false; // 퍼즐함수 성공했는지 확인하는 변수초기화
-  itemBoxUsed = false; // 박스 사용했는지 확인하는 변수 초기화
+  itemBoxSelfOpen = false;
+  itemBoxUsed = false;
   BlinkTimer.deleteTimer(blinkTimerId);
   GameTimer.deleteTimer(gameTimerId);
   ledcWrite(VIBRATION_RANGE_PIN, 0);
@@ -128,10 +184,8 @@ void ReadyFunc(void) {
   for (int i = HI1; i <= FI2; i++)
     Serial.println(batteryPackRnd[i].strDevice + ":" +
                    (String)batteryPackRnd[i].nVal);
-  for (int i = HI1; i <= FI2; i++) {
-    if (batteryPackRnd[i].nVal != 0)
-      has2wifi.Send(batteryPackRnd[i].strDevice, "battery_pack",
-                    (String)batteryPackRnd[i].nVal);
+  if (enableReadyPackSync) {
+    enqueueReadyBatterySends();
   }
   sendCommand("page pgWait");
   Serial.println("READY");
@@ -139,8 +193,8 @@ void ReadyFunc(void) {
   BoxClose();
   ptrCurrentMode = WaitFunc;
   ptrRfidMode = WaitFunc;
-  itemBoxSelfOpen = false; // 퍼즐함수 성공했는지 확인하는 변수초기화
-  itemBoxUsed = false; // 박스 사용했는지 확인하는 변수 초기화
+  itemBoxSelfOpen = false;
+  itemBoxUsed = false;
   BlinkTimer.deleteTimer(blinkTimerId);
   GameTimer.deleteTimer(gameTimerId);
   ledcWrite(VIBRATION_RANGE_PIN, 0);
