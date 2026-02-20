@@ -46,9 +46,9 @@
 ## 📁 파일 구조
 
 ```
-itembox_random_add/
-├── itembox_random_add.ino   # 메인 스케치 (setup/loop)
-├── itembox_random_add.h     # 전역 변수 및 함수 선언
+updated_itembox/
+├── updated_itembox.ino   # 메인 스케치 (setup/loop)
+├── updated_itembox.h     # 전역 변수 및 함수 선언
 ├── Library_and_pin.h        # 라이브러리 & 핀 정의
 ├── ItemBoxState.h           # FSM 상태 정의 및 전이 함수
 │
@@ -216,7 +216,7 @@ QC 결과는 HTTP GET `/api/qc-report`로 조회 가능합니다.
 | **시리얼 속도** | 115200 |
 
 ### 업로드 방법
-1. Arduino IDE에서 `itembox_random_add.ino` 열기
+1. Arduino IDE에서 `updated_itembox.ino` 열기
 2. 보드/포트 선택
 3. `Ctrl+U` 또는 `스케치 → 업로드`
 4. Serial Monitor에서 `QC System Started` 확인

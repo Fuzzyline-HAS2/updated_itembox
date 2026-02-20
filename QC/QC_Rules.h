@@ -5,7 +5,9 @@
 #include <HAS2_Wifi.h>
 #include <WiFi.h>
 #include <cstdint>
+#include <esp_system.h>
 #include "../ItemBoxState.h"
+#include "../Library_and_pin.h"
 
 // 'my' is declared in HAS2_Wifi.h (included above)
 
@@ -86,6 +88,46 @@ public:
 };
 
 // ---------------------------------------------------------
+// Rule: Last Reset Reason (Brownout / WDT / Panic)
+// ---------------------------------------------------------
+class QCRule_ResetReason : public IQCRule {
+public:
+  String getId() const override { return "SYS_RST_01"; }
+  String getName() const override { return "Reset Reason Check"; }
+  bool isFastCheck() const override { return false; }
+
+  QCResult check() override {
+    static bool reported = false;
+    if (reported) return QCResult();
+
+    esp_reset_reason_t reason = esp_reset_reason();
+    if (reason == ESP_RST_BROWNOUT) {
+      reported = true;
+      return QCResult(QCLevel::FAIL, getId(), "Last Reset Reason",
+                      "No brownout", "ESP_RST_BROWNOUT",
+                      "Check 5V/3.3V rail, motor surge noise, shared GND");
+    }
+    bool isWdtReset = (reason == ESP_RST_WDT || reason == ESP_RST_INT_WDT);
+#ifdef ESP_RST_TASK_WDT
+    isWdtReset = isWdtReset || (reason == ESP_RST_TASK_WDT);
+#endif
+    if (isWdtReset) {
+      reported = true;
+      return QCResult(QCLevel::WARN, getId(), "Last Reset Reason",
+                      "No watchdog reset", String((int)reason),
+                      "Check blocking code and peripheral hangs");
+    }
+    if (reason == ESP_RST_PANIC) {
+      reported = true;
+      return QCResult(QCLevel::WARN, getId(), "Last Reset Reason",
+                      "No panic reset", "ESP_RST_PANIC",
+                      "Check null pointer / memory corruption");
+    }
+    return QCResult();
+  }
+};
+
+// ---------------------------------------------------------
 // Rule: Game State Consistency
 // ---------------------------------------------------------
 class QCRule_GameState : public IQCRule {
@@ -150,13 +192,98 @@ public:
   bool isFastCheck() const override { return false; }
 
   QCResult check() override {
+    extern bool rfid_init_attempted;
     extern bool rfid_init_complete[2];
+    if (!rfid_init_attempted) {
+      return QCResult();
+    }
     if (!rfid_init_complete[0] || !rfid_init_complete[1]) {
       String val = "Inner:" + String(rfid_init_complete[1]) +
                    " Outer:" + String(rfid_init_complete[0]);
       return QCResult(QCLevel::FAIL, getId(), "RFID Init",
                       "Both initialized", val,
                       "Check PN532 wiring and SPI connections");
+    }
+    return QCResult();
+  }
+};
+
+// ---------------------------------------------------------
+// Rule: RFID Runtime Heartbeat in RFID-required FSM states
+// ---------------------------------------------------------
+class QCRule_RfidHeartbeat : public IQCRule {
+public:
+  String getId() const override { return "HW_RFID_02"; }
+  String getName() const override { return "RFID Runtime Heartbeat"; }
+  bool isFastCheck() const override { return false; }
+
+  QCResult check() override {
+    extern bool rfid_init_attempted;
+    extern unsigned long lastRfidAckMs;
+    if (!rfid_init_attempted) return QCResult();
+
+    bool needsRfid = (currentState == ItemBoxState::ACTIVATE ||
+                      currentState == ItemBoxState::QUIZ_COMPLETE ||
+                      currentState == ItemBoxState::OPEN);
+    if (!needsRfid) return QCResult();
+
+    unsigned long now = millis();
+    if (lastRfidAckMs == 0) {
+      return QCResult(QCLevel::WARN, getId(), "RFID Runtime Ack",
+                      "ACK within 5s", "No ACK yet",
+                      "Check SPI wiring and PN532 power");
+    }
+    unsigned long idleMs = now - lastRfidAckMs;
+    if (idleMs > 5000UL) {
+      return QCResult(QCLevel::FAIL, getId(), "RFID Runtime Ack",
+                      "<= 5000ms", String(idleMs) + "ms",
+                      "RFID link lost, check cable/connectors/noise");
+    }
+    return QCResult();
+  }
+};
+
+// ---------------------------------------------------------
+// Rule: Static Pin Conflict Check
+// ---------------------------------------------------------
+class QCRule_PinConflict : public IQCRule {
+public:
+  String getId() const override { return "HW_PIN_01"; }
+  String getName() const override { return "Pin Conflict Check"; }
+  bool isFastCheck() const override { return true; }
+
+  QCResult check() override {
+    if (RELAY_PIN == VIBRATION_RANGE_PIN) {
+      return QCResult(QCLevel::FAIL, getId(), "GPIO Assignment",
+                      "Unique output pin per actuator",
+                      "RELAY_PIN == VIBRATION_RANGE_PIN == " + String(RELAY_PIN),
+                      "Split relay and vibration to different GPIOs");
+    }
+    if (PN532_SS1 == PN532_SS2) {
+      return QCResult(QCLevel::FAIL, getId(), "PN532 SS Pins",
+                      "Different SS pins", String(PN532_SS1),
+                      "Assign unique SS pin per PN532 module");
+    }
+    return QCResult();
+  }
+};
+
+// ---------------------------------------------------------
+// Rule: GPIO Capability Mismatch Check
+// ---------------------------------------------------------
+class QCRule_GpioCapability : public IQCRule {
+public:
+  String getId() const override { return "HW_GPIO_01"; }
+  String getName() const override { return "GPIO Capability Check"; }
+  bool isFastCheck() const override { return true; }
+
+  QCResult check() override {
+    // GPIO34~39 are input-only and do not support internal pull-up/down.
+    if (buttonPin >= 34 && buttonPin <= 39) {
+      return QCResult(QCLevel::FAIL, getId(), "buttonPin Capability",
+                      "Pull-up capable GPIO or external resistor",
+                      "GPIO" + String(buttonPin),
+                      "Use external pull resistor or move button pin");
     }
     return QCResult();
   }

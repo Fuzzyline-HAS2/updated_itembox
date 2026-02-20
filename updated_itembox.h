@@ -115,6 +115,9 @@ bool rfid_tag;
 bool rfid_timer_assess;
 
 bool rfid_init_complete[2];
+extern bool rfid_init_attempted;
+extern unsigned long lastRfidAckMs;
+extern unsigned long lastRfidTagMs;
 void RfidInit(void);
 void RfidLoopInner();
 void RfidLoopOutter();

@@ -1,8 +1,13 @@
 /**
- * @brief 내부 외부 pn532 초기활성화 및 실패시 재시도 (최대 10회)
+ * @brief ?��? ?��? pn532 초기?�성??�??�패???�시??(최�? 10??
  */
+bool rfid_init_attempted = false;
+unsigned long lastRfidAckMs = 0;
+unsigned long lastRfidTagMs = 0;
+
 void RfidInit()
 {
+  rfid_init_attempted = true;
   const int MAX_RETRY = 10;
   int retryCount = 0;
   bool allConnected = false;
@@ -13,9 +18,9 @@ void RfidInit()
     for (int i = 0; i < rfid_num; ++i)
     {
       nfc[i].begin();
-      if (!(nfc[i].getFirmwareVersion()))                 // pn532 동작 안할때
+      if (!(nfc[i].getFirmwareVersion()))                 // pn532 ?�작 ?�할??
       {
-        Serial.println("PN532 연결실패 : " + String(i) + " (재시도 " + String(retryCount + 1) + "/" + String(MAX_RETRY) + ")");
+        Serial.println("PN532 ?�결?�패 : " + String(i) + " (?�시??" + String(retryCount + 1) + "/" + String(MAX_RETRY) + ")");
         AllNeoOn(RED);
         allConnected = false;
         rfid_init_complete[i] = false;
@@ -23,20 +28,20 @@ void RfidInit()
       else
       {
         nfc[i].SAMConfig();
-        Serial.println("PN532 연결성공 : " + String(i));
+        Serial.println("PN532 ?�결?�공 : " + String(i));
         rfid_init_complete[i] = true;
         AllNeoOn(YELLOW);
       }
-      yield();                                            // Watchdog 피드 (블로킹 없음)
+      yield();                                            // Watchdog ?�드 (블로???�음)
     }
     if (!allConnected) retryCount++;
   }
   if (!allConnected) {
-    Serial.println("⚠️ PN532 초기화 실패 - 최대 재시도 초과");
+    Serial.println("?�️ PN532 초기???�패 - 최�? ?�시??초과");
   }
 }
 /**
- * @brief 아이템박스 내부 pn532 태그 읽어와서 CheckingPlayer로 전송
+ * @brief ?�이?�박???��? pn532 ?�그 ?�어?�??CheckingPlayer�??�송
  */
 void RfidLoopInner()
 {
@@ -48,23 +53,25 @@ void RfidLoopInner()
   byte pn532_packetbuffer11[64];
   pn532_packetbuffer11[0] = 0x00;
   if (nfc[INPN532].sendCommandCheckAck(pn532_packetbuffer11, 1))
-  {                                                                           // rfid 통신 가능한 상태인지 확인
+  {
+    lastRfidAckMs = millis();                                                                           // rfid ?�신 가?�한 ?�태?��? ?�인
     if (nfc[INPN532].startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A))
-    {                                                                         // rfid에 tag 찍혔는지 확인용 //데이터 들어오면 uid정보 가져오기
+    {                                                                         // rfid??tag 찍혔?��? ?�인??//?�이???�어?�면 uid?�보 가?�오�?
       if (nfc[INPN532].ntag2xx_ReadPage(7, data))
-      {                                                                       // ntag 데이터에 접근해서 불러와서 data행열에 저장
+      {
+        lastRfidTagMs = millis();                                                                       // ntag ?�이?�에 ?�근?�서 불러?�??data?�열???�??
         Serial.println("TAGGGED");
         CheckingPlayers(data);
       }
     }
   }
-  // TODO InnerRFID 루프시 연결 안되면 워치독
+  // TODO InnerRFID 루프???�결 ?�되�??�치??
   // else(
   //   ESP.restart();
   // )
 }
 /**
- * @brief 아이템박스 외부 pn532 태그 읽어와서 CheckingPlayer로 전송
+ * @brief ?�이?�박???��? pn532 ?�그 ?�어?�??CheckingPlayer�??�송
  */
 void RfidLoopOutter()
 {
@@ -76,120 +83,123 @@ void RfidLoopOutter()
   byte pn532_packetbuffer11[64];
   pn532_packetbuffer11[0] = 0x00;
   if (nfc[OUTPN532].sendCommandCheckAck(pn532_packetbuffer11, 1))
-  {                                                                           // rfid 통신 가능한 상태인지 확인
+  {
+    lastRfidAckMs = millis();                                                                           // rfid ?�신 가?�한 ?�태?��? ?�인
     if (nfc[OUTPN532].startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A))
-    {                                                                         // rfid에 tag 찍혔는지 확인용 //데이터 들어오면 uid정보 가져오기
+    {                                                                         // rfid??tag 찍혔?��? ?�인??//?�이???�어?�면 uid?�보 가?�오�?
       if (nfc[OUTPN532].ntag2xx_ReadPage(7, data))
-      {                                                                       // ntag 데이터에 접근해서 불러와서 data행열에 저장
+      {
+        lastRfidTagMs = millis();                                                                       // ntag ?�이?�에 ?�근?�서 불러?�??data?�열???�??
         Serial.println("TAGGGED");
         CheckingPlayers(data);
       }
     }
   }
-  // TODO OutterRFID 루프시 연결 안되면 워치독
+  // TODO OutterRFID 루프???�결 ?�되�??�치??
   // else(
   //   ESP.restart();
   // )
 }
 
 /**
- * @brief 내외부에서 태그한 카드데이터 string으로 변환후 DB에 요청하여 'role'확인하여 ptrRfidMode로 전송
+ * @brief ?�외부?�서 ?�그??카드?�이??string?�로 변?�후 DB???�청?�여 'role'?�인?�여 ptrRfidMode�??�송
  */
-void CheckingPlayers(uint8_t rfidData[32])                // 어떤 카드가 들어왔는지 확인용
+void CheckingPlayers(uint8_t rfidData[32])                // ?�떤 카드가 ?�어?�는지 ?�인??
 {
-  String tagUser = "";                                    // 읽어온 uint_8t값 string으로 변환하기 위한 String 변수
-  for (int i = 0; i < 4; i++)                             // GxPx 데이터만 배열에서 추출해서 string으로 저장
+  String tagUser = "";                                    // ?�어??uint_8t�?string?�로 변?�하�??�한 String 변??
+  for (int i = 0; i < 4; i++)                             // GxPx ?�이?�만 배열?�서 추출?�서 string?�로 ?�??
     tagUser += (char)rfidData[i];
   Serial.println("tag_user_data : " + tagUser);
   if (tagUser == "MMMM")
-  {                                                       //"MMMM"일경우 DB요청 하지 않고 바로 watchdog 실행(DB에 MMMM 플레이어는 존재하지 않아서 요청하면 오류 발생)
+  {                                                       //"MMMM"?�경??DB?�청 ?��? ?�고 바로 watchdog ?�행(DB??MMMM ?�레?�어??존재?��? ?�아???�청?�면 ?�류 발생)
     ESP.restart();
   }
-                                                          // 1. 태그한 플레이어의 역할과 생명칩갯수, 최대생명칩갯수 등 읽어오기
-  has2wifi.Receive(tagUser);                              // 2. 술래인지, 플레이어인지 구분
-  if ((String)(const char *)tag["role"] == "player")      // 3. 태그한 사용자가 플레이어 이면
+                                                          // 1. ?�그???�레?�어????���??�명칩갯?? 최�??�명칩갯?????�어?�기
+  has2wifi.Receive(tagUser);                              // 2. ?�래?��?, ?�레?�어?��? 구분
+  if ((String)(const char *)tag["role"] == "player")      // 3. ?�그???�용?��? ?�레?�어 ?�면
   { 
     Serial.println("Player Tagged");
     ptrRfidMode();
   }
-  else if ((String)(const char *)tag["role"] == "tagger") // 4. 태그한 사용자가 술래면 아무 변화 x
+  else if ((String)(const char *)tag["role"] == "tagger") // 4. ?�그???�용?��? ?�래�??�무 변??x
     Serial.println("Tagger Tagged");
-  else if ((String)(const char *)tag["role"] == "ghost")  // 5. 태그한 사용자가 유령이면 아무 변화 x
+  else if ((String)(const char *)tag["role"] == "ghost")  // 5. ?�그???�용?��? ?�령?�면 ?�무 변??x
     Serial.println("Ghost Tagged");
-  else // 6. 예외 처리
+  else // 6. ?�외 처리
     Serial.println("Wrong TAG");
 }
 
 /**
- * @brief Activate 상황에서 외부 pn532 태그시 엔코더 활성화 후 RFID 중지 Puzzle함수 실행
+ * @brief Activate ?�황?�서 ?��? pn532 ?�그???�코???�성????RFID 중�? Puzzle?�수 ?�행
  */
 void StartPuzzle()
 {
   transitionTo(ItemBoxState::PUZZLE);
   Serial.println("StartPuzzle");
-  WifiTimer.deleteTimer(wifiTimerId);                           // 엔코더 렉을 없애기 위해 wifi read 엔코더 사용동안에 중단
+  WifiTimer.deleteTimer(wifiTimerId);                           // ?�코???�을 ?�애�??�해 wifi read ?�코???�용?�안??중단
   GameTimer.deleteTimer(gameTimerId);
-  gameTimerId = GameTimer.setInterval(gameTime, GameTimerFunc); // puzzle 함수 실행동안 n초 이상 입력이 없으면 초기화 하기위해 시간을 재는 타이머 시작
+  gameTimerId = GameTimer.setInterval(gameTime, GameTimerFunc); // puzzle ?�수 ?�행?�안 n�??�상 ?�력???�으�?초기???�기?�해 ?�간???�는 ?�?�머 ?�작
   answerCnt = 0;
-  ptrCurrentMode = Puzzle;                                      // ptr함수의 주소를 RFIDOuter -> Puzzle로 변환
-  AllNeoOn(BLUE);                                               // puzzle 함수 진행동안 전체 네오픽셀 파란색 유지
-  attachInterrupt(encoderPinA, updateEncoder, CHANGE);          // 엔코더 하드웨어 인터럽트 활성화
+  ptrCurrentMode = Puzzle;                                      // ptr?�수??주소�?RFIDOuter -> Puzzle�?변??
+  AllNeoOn(BLUE);                                               // puzzle ?�수 진행?�안 ?�체 ?�오?��? ?��????��?
+  attachInterrupt(encoderPinA, updateEncoder, CHANGE);          // ?�코???�드?�어 ?�터?�트 ?�성??
   attachInterrupt(encoderPinB, updateEncoder, CHANGE);
 }
 
 /**
- * @brief Puzzle함수로 문제를 다 맞춘 후 완료하는 태그를 실행했을때 실행되는 함수
+ * @brief Puzzle?�수�?문제�???맞춘 ???�료?�는 ?�그�??�행?�을???�행?�는 ?�수
  */
 void PuzzleSolved()
 {
   transitionTo(ItemBoxState::OPEN);
-  itemBoxSelfOpen = true;                                                         // 태그하면 아이템박스가 open 상태 임으로 메인에서 open 명령 들어와도 재실행되지 않게 제한하는 bool 변수
-  has2wifi.Send((String)(const char *)my["device_name"], "device_state", "open"); // 메인으로 현재부터 아박의 상태가 open으로 저장
+  itemBoxSelfOpen = true;                                                         // ?�그?�면 ?�이?�박?��? open ?�태 ?�으�?메인?�서 open 명령 ?�어?�???�실?�되지 ?�게 ?�한?�는 bool 변??
+  has2wifi.Send((String)(const char *)my["device_name"], "device_state", "open"); // 메인?�로 ?�재부???�박???�태가 open?�로 ?�??
   Serial.println("PuzzleSolved");
-  AllNeoOn(BLUE);                       // 엔코더 네오픽셀의 빨간색 포인틀 없애기 위해 전체 네오픽셀 파란색으로 한번더 변환
-  sendCommand("page pgItemOpen");       // Nextion의 페이지 pgItemOpen으로 변환
+  AllNeoOn(BLUE);                       // ?�코???�오?��???빨간???�인?� ?�애�??�해 ?�체 ?�오?��? ?��??�으�??�번??변??
+  sendCommand("page pgItemOpen");       // Nextion???�이지 pgItemOpen?�로 변??
   delay(10);
-  sendCommand("wOutTagged.en=1");       // Nextion에서 아박 열리는 효과음 재생
-  ExpSend();                            // 할당받은 EXP양 UI설정을 위해 Nextion으로 전송
-  BatteryPackSend();                    // 할당받은 배터리팩양 UI설정을 위해 Nextion으로 전송
-  BoxOpen();                            // 아박 오픈(리니어 모터 ON)
-  BlinkTimer.deleteTimer(blinkTimerId); // 전에 사용된 BlinkTimer를 초기화하고 다시 시작하기 위해 종료
-  BlinkTimerStart(INNER, YELLOW);       // 내부태그 네오픽셀 노란색 점멸 시작
-  GameTimer.deleteTimer(gameTimerId);   // Puzzle함수 -> PuzzleSolved함수 진행되면 이후로는 Activate로 초기화 되지 않게 타이머 종료(기획대로)
-  ptrCurrentMode = RfidLoopInner;       // ptr함수의 주소를 RFIDOuter -> RfidInner로 교체 (내부태그하여 아이템가져가기 위해)
-  ptrRfidMode = ItemTook;               // 내부태그되고 CheckingPlayer 함수가 실행되면 ItemTook로 실행되게 주소 변경
+  sendCommand("wOutTagged.en=1");       // Nextion?�서 ?�박 ?�리???�과???�생
+  ExpSend();                            // ?�당받�? EXP??UI?�정???�해 Nextion?�로 ?�송
+  BatteryPackSend();                    // ?�당받�? 배터리팩??UI?�정???�해 Nextion?�로 ?�송
+  BoxOpen();                            // ?�박 ?�픈(리니??모터 ON)
+  BlinkTimer.deleteTimer(blinkTimerId); // ?�에 ?�용??BlinkTimer�?초기?�하�??�시 ?�작?�기 ?�해 종료
+  BlinkTimerStart(INNER, YELLOW);       // ?��??�그 ?�오?��? ?��????�멸 ?�작
+  GameTimer.deleteTimer(gameTimerId);   // Puzzle?�수 -> PuzzleSolved?�수 진행?�면 ?�후로는 Activate�?초기???��? ?�게 ?�?�머 종료(기획?��?
+  ptrCurrentMode = RfidLoopInner;       // ptr?�수??주소�?RFIDOuter -> RfidInner�?교체 (?��??�그?�여 ?�이?��??��?�??�해)
+  ptrRfidMode = ItemTook;               // ?��??�그?�고 CheckingPlayer ?�수가 ?�행?�면 ItemTook�??�행?�게 주소 변�?
 }
 
 /**
- * @brief PuzzleSolved 함수 실행후 내부 RIFD태그 되어있을때 실행되는 함수 (배터리팩이랑 경험치 가져오는 버그)
+ * @brief PuzzleSolved ?�수 ?�행???��? RIFD?�그 ?�어?�을???�행?�는 ?�수 (배터리팩?�랑 경험�?가?�오??버그)
  */
 void ItemTook()
 {
-  /* #region  배터리팩 개수 Serial로 확인하는 부분 */
+  /* #region  배터리팩 개수 Serial�??�인?�는 부�?*/
   Serial.println("ItemTook");
   Serial.println(((int)tag["battery_pack"] + (int)my["battery_pack"]));
   Serial.println((int)my["max_battery_pack"]);
   /* #endregion */
   if (((int)tag["battery_pack"] + (int)my["battery_pack"]) <= (int)tag["max_battery_pack"]){
-    transitionTo(ItemBoxState::USED);                                    // 태그한 플레이어의 현재 배터리팩 최대 소지 가능 개수가 >= 아이템박스에서 얻을 수 있는거 보다 많거나 같을때
-    sendCommand("page pgItemTaken");                                                                                            // Nextion에서 배터리팩 가져간 후 페이지로 변경 + 효과음은 페이지 pgItemTakenb 변경시 nextion에서 자동재생
-    AllNeoOn(RED);                                                                                                              // 가져가고 나서 USED일땐 전체 빨간색
-    has2wifi.Send((String)(const char *)my["device_name"], "device_state", "used");                                             // 아박 device_state = used 처리
-    has2wifi.Send((String)(const char *)tag["device_name"], "battery_pack", ("+" + (String)(const char *)my["battery_pack"]));  // 태그한 플레이어 배터리팩 개수 추가
-    has2wifi.Send((String)(const char *)tag["device_name"], "exp", ("+" + (String)(const char *)my["exp_pack"]));               // 태그한 플레이어 경험치 추가
-    has2wifi.Send((String)(const char *)my["device_name"], "battery_pack", ("-" + (String)(const char *)my["battery_pack"]));   // 태그된 아박 배터리팩 개수 감소
-    has2wifi.Send((String)(const char *)my["device_name"], "exp_pack", ("-" + (String)(const char *)my["exp_pack"]));           // 태그된 아박 경험치 감소
-    BlinkTimer.deleteTimer(blinkTimerId);                                                                                       // 내부태그 황색 점멸  종료
-    itemBoxUsed = true;                                                                                                         // used 명령 들어와도 재실행 되지 않게 제한하는 bool 변수
-    ptrCurrentMode = WaitFunc;                                                                                                  // ptr 함수의 실행이 null로 변환
-    ptrRfidMode = WaitFunc;                                                                                                     // ptr 함수의 실행이 null로 변환
+    transitionTo(ItemBoxState::USED);                                    // ?�그???�레?�어???�재 배터리팩 최�? ?��? 가??개수가 >= ?�이?�박?�에???�을 ???�는�?보다 많거??같을??
+    sendCommand("page pgItemTaken");                                                                                            // Nextion?�서 배터리팩 가?�간 ???�이지�?변�?+ ?�과?��? ?�이지 pgItemTakenb 변경시 nextion?�서 ?�동?�생
+    AllNeoOn(RED);                                                                                                              // 가?��?�??�서 USED?�땐 ?�체 빨간??
+    has2wifi.Send((String)(const char *)my["device_name"], "device_state", "used");                                             // ?�박 device_state = used 처리
+    has2wifi.Send((String)(const char *)tag["device_name"], "battery_pack", ("+" + (String)(const char *)my["battery_pack"]));  // ?�그???�레?�어 배터리팩 개수 추�?
+    has2wifi.Send((String)(const char *)tag["device_name"], "exp", ("+" + (String)(const char *)my["exp_pack"]));               // ?�그???�레?�어 경험�?추�?
+    has2wifi.Send((String)(const char *)my["device_name"], "battery_pack", ("-" + (String)(const char *)my["battery_pack"]));   // ?�그???�박 배터리팩 개수 감소
+    has2wifi.Send((String)(const char *)my["device_name"], "exp_pack", ("-" + (String)(const char *)my["exp_pack"]));           // ?�그???�박 경험�?감소
+    BlinkTimer.deleteTimer(blinkTimerId);                                                                                       // ?��??�그 ?�색 ?�멸  종료
+    itemBoxUsed = true;                                                                                                         // used 명령 ?�어?�???�실???��? ?�게 ?�한?�는 bool 변??
+    ptrCurrentMode = WaitFunc;                                                                                                  // ptr ?�수???�행??null�?변??
+    ptrRfidMode = WaitFunc;                                                                                                     // ptr ?�수???�행??null�?변??
   }
-  else                                                  // 태그한 플레이어가 더이상 배터리팩을 소지할 수 없을 때 실행 
+  else                                                  // ?�그???�레?�어가 ?�이??배터리팩???��??????�을 ???�행 
   {
     Serial.println("NOT ENOUGH IOT BatteryPack");       //
-    sendCommand("page pgItemTakeFail");                 // Nextion에서 더이상 소지할수 없다는 안내창과 효과음 출력을 위해 serial 전송
-    NeoBlink(INNER, RED, 4, 250);                       // 내부 네오픽셀 4번 0.25s 간격으로 적색 점멸 -> Delay사용으로 이 함수에 2초 머물러 있음
-    BlinkTimer.deleteTimer(blinkTimerId);               // 내부 네오픽셀 황색 점멸 타이머 초기화를 위해 종료
-    BlinkTimerStart(INNER, YELLOW);                     // 내부 네오픽셀 황색 점멸 타이머 시작
+    sendCommand("page pgItemTakeFail");                 // Nextion?�서 ?�이???��??�수 ?�다???�내창과 ?�과??출력???�해 serial ?�송
+    NeoBlink(INNER, RED, 4, 250);                       // ?��? ?�오?��? 4�?0.25s 간격?�로 ?�색 ?�멸 -> Delay?�용?�로 ???�수??2�?머물???�음
+    BlinkTimer.deleteTimer(blinkTimerId);               // ?��? ?�오?��? ?�색 ?�멸 ?�?�머 초기?��? ?�해 종료
+    BlinkTimerStart(INNER, YELLOW);                     // ?��? ?�오?��? ?�색 ?�멸 ?�?�머 ?�작
   }
 }
+
