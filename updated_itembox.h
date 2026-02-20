@@ -7,7 +7,7 @@ const int rfid_num = 2; // 설치된 pn532의 개수
 ItemBoxState currentState = ItemBoxState::BOOT;  // FSM 현재 상태
 
 //****************************************WIFI****************************************************************
-HAS2_Wifi has2wifi;
+HAS2_Wifi has2wifi("http://172.30.1.43");;
 void DataChanged();
 void SettingFunc(void);
 void ActivateFunc(void);

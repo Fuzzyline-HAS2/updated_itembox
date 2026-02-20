@@ -7,7 +7,7 @@ void TimerInit() {
 }
 
 void WifiIntervalFunc() {
-  // has2wifi.Loop()는 loop()에서 직접 호출 (WDT 방지)
+  has2wifi.Loop(DataChanged);
 }
 void GameTimerFunc() {
   nGameTimerCnt++;
@@ -15,11 +15,11 @@ void GameTimerFunc() {
   if (nGameTimerCnt >= 6) {
     ActivateFunc();
     ledcWrite(VIBRATION_RANGE_PIN, 0);
-    GameTimer.deleteTimer(gameTimerId); // 게임 타이머 시작
+    GameTimer.deleteTimer(gameTimerId);
     WifiTimer.deleteTimer(wifiTimerId);
     wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);
     nGameTimerCnt = 0;
-    detachInterrupt(encoderPinA); // 엔코더 사용 막기
+    detachInterrupt(encoderPinA);
     detachInterrupt(encoderPinB);
     encoderValue = 165;
   }

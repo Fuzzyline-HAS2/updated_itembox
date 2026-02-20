@@ -1,6 +1,6 @@
-; /**
+/**
    * @file Done_ItemBox_code.ino
-   * @author 김병준 (you@domain.com)
+   * @author Unknown (you@domain.com)
    * @brief
    * @version 1.0
    * @date 2022-11-29
