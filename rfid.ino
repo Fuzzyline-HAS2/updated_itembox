@@ -131,11 +131,10 @@ void StartPuzzle()
 void PuzzleSolved()
 {
   itemBoxSelfOpen = true;                                                         // 태그하면 아이템박스가 open 상태 임으로 메인에서 open 명령 들어와도 재실행되지 않게 제한하는 bool 변수
-  has2wifi.Send((String)(const char *)my["device_name"], "device_state", "open"); // 메인으로 현재부터 아박의 상태가 open으로 저장
   Serial.println("PuzzleSolved");
   AllNeoOn(BLUE);                       // 엔코더 네오픽셀의 빨간색 포인틀 없애기 위해 전체 네오픽셀 파란색으로 한번더 변환
   sendCommand("page pgItemOpen");       // Nextion의 페이지 pgItemOpen으로 변환
-  delay(10);
+  delay(200);
   sendCommand("wOutTagged.en=1");       // Nextion에서 아박 열리는 효과음 재생
   ExpSend();                            // 할당받은 EXP양 UI설정을 위해 Nextion으로 전송
   BatteryPackSend();                    // 할당받은 배터리팩양 UI설정을 위해 Nextion으로 전송
@@ -145,6 +144,7 @@ void PuzzleSolved()
   GameTimer.deleteTimer(gameTimerId);   // Puzzle함수 -> PuzzleSolved함수 진행되면 이후로는 Activate로 초기화 되지 않게 타이머 종료(기획대로)
   ptrCurrentMode = RfidLoopInner;       // ptr함수의 주소를 RFIDOuter -> RfidInner로 교체 (내부태그하여 아이템가져가기 위해)
   ptrRfidMode = ItemTook;               // 내부태그되고 CheckingPlayer 함수가 실행되면 ItemTook로 실행되게 주소 변경
+  has2wifi.Send((String)(const char *)my["device_name"], "device_state", "open"); // 하드웨어 동작 완료 후 서버에 상태 전송
 }
 
 /**

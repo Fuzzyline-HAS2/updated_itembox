@@ -35,7 +35,7 @@ void DataChanged()
                 Serial.println("PuzzleSolved");
                 AllNeoOn(BLUE);
                 sendCommand("page pgItemOpen");
-                delay(10);
+                delay(200);
                 sendCommand("wOutTagged.en=1");
                 ExpSend();
                 BatteryPackSend();

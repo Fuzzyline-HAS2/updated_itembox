@@ -21,6 +21,7 @@ void BoxClose()
     digitalWrite(MOTOR_INA1_PIN, LOW);
     digitalWrite(MOTOR_INA2_PIN, HIGH);
     delay(4000);
+    MotorStop();
     Serial.println("BOX Closed");
 }
 
@@ -31,6 +32,7 @@ void BoxOpen()
     digitalWrite(MOTOR_INA1_PIN, HIGH);
     digitalWrite(MOTOR_INA2_PIN, LOW);
     delay(4000);
+    MotorStop();
     Serial.println("BOX Opened");
 }
 
