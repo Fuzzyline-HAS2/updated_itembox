@@ -4,22 +4,20 @@ void MotorInit()
     pinMode(BOXSWITCH_PIN,INPUT_PULLUP);
     pinMode(MOTOR_INA1_PIN, OUTPUT);
     pinMode(MOTOR_INA2_PIN, OUTPUT);
-    ledcSetup(MotorLedChannel, MotorFreq, MotorResolution);
-    ledcAttachPin(MOTOR_PWMA_PIN, MotorLedChannel);
-    ledcWrite(MotorLedChannel, 0);
+    ledcAttach(MOTOR_PWMA_PIN, MotorFreq, MotorResolution);
+    ledcWrite(MOTOR_PWMA_PIN, 0);
     BoxClose();
-    
+
     //Vibration Motor Init
     pinMode(VIBRATION_ANSWER_PIN, OUTPUT);
     digitalWrite(VIBRATION_ANSWER_PIN, HIGH);
-    ledcSetup(VibrationLedChannel, MotorFreq, MotorResolution);
-    ledcAttachPin(VIBRATION_RANGE_PIN, VibrationLedChannel);
-    ledcWrite(VibrationLedChannel, 0);
+    ledcAttach(VIBRATION_RANGE_PIN, MotorFreq, MotorResolution);
+    ledcWrite(VIBRATION_RANGE_PIN, 0);
 }
 void BoxClose()
 {
     Serial.println("BOX Close");
-    ledcWrite(MotorLedChannel, MotorMAX_DUTY_CYCLE - 1);
+    ledcWrite(MOTOR_PWMA_PIN, MotorMAX_DUTY_CYCLE - 1);
     digitalWrite(MOTOR_INA1_PIN, LOW);
     digitalWrite(MOTOR_INA2_PIN, HIGH);
     delay(4000);
@@ -29,7 +27,7 @@ void BoxClose()
 void BoxOpen()
 {
     Serial.println("BOX Open");
-    ledcWrite(MotorLedChannel, MotorMAX_DUTY_CYCLE - 1);
+    ledcWrite(MOTOR_PWMA_PIN, MotorMAX_DUTY_CYCLE - 1);
     digitalWrite(MOTOR_INA1_PIN, HIGH);
     digitalWrite(MOTOR_INA2_PIN, LOW);
     delay(4000);
@@ -54,5 +52,5 @@ void EncoderVibrationStrength(int answer)
     else if(differenceValue < answerRange + vibeRange * 2)  vibeStrength = 2;
     else if(differenceValue < answerRange + vibeRange * 3)  vibeStrength = 3;
     else vibeStrength = 4;
-    ledcWrite(VibrationLedChannel, modeValue[VIBESTREGNTH][vibeStrength]);
+    ledcWrite(VIBRATION_RANGE_PIN, modeValue[VIBESTREGNTH][vibeStrength]);
 }

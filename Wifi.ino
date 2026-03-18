@@ -1,6 +1,6 @@
 void DataChanged()
 {
-  static StaticJsonDocument<500> cur;   //저장되어 있는 cur과 읽어온 my 값과 비교후 실행
+  static StaticJsonDocument<1000> cur;   //저장되어 있는 cur과 읽어온 my 값과 비교후 실행
     if((String)(const char*)my["game_state"] != (String)(const char*)cur["game_state"])
     {  
         if((String)(const char*)my["game_state"] == "setting"){
@@ -40,7 +40,7 @@ void DataChanged()
                 ExpSend();
                 BatteryPackSend();
                 BoxOpen();
-                pixels[INNER].lightColor(color[YELLOW]);
+                lightColor(pixels[INNER], color[YELLOW]);
                 ptrCurrentMode = RfidLoopInner;
                 ptrRfidMode = ItemTook;
                 BlinkTimer.deleteTimer(blinkTimerId);
@@ -95,7 +95,7 @@ void SettingFunc(void)
     itemBoxUsed = false;        //박스 사용했는지 확인하는 변수 초기화
     BlinkTimer.deleteTimer(blinkTimerId);
     GameTimer.deleteTimer(gameTimerId);
-    ledcWrite(VibrationLedChannel, 0);
+    ledcWrite(VIBRATION_RANGE_PIN, 0);
 }
 void ActivateFunc(void)
 {
@@ -111,7 +111,7 @@ void ActivateFunc(void)
     itemBoxUsed = false;        //박스 사용했는지 확인하는 변수 초기화
     BlinkTimer.deleteTimer(blinkTimerId);
     GameTimer.deleteTimer(gameTimerId);
-    ledcWrite(VibrationLedChannel, 0);
+    ledcWrite(VIBRATION_RANGE_PIN, 0);
 }
 void ReadyFunc(void)
 {
@@ -134,6 +134,36 @@ void ReadyFunc(void)
         if(batteryPackRnd[i].nVal != 0)
             has2wifi.Send(batteryPackRnd[i].strDevice, "battery_pack", (String)batteryPackRnd[i].nVal);
     }
+
+    // 퍼즐 정답 랜덤 생성
+    // - 1번 정답: 10~23 고정 범위
+    // - 2~3번 정답: 1~95 범위
+    // - 정답끼리 간격: 최소 10칸, 최대 30칸
+    int totalAnswers = modeValue[RANGE][ANSWER_CNT]; // 3
+    for (int i = 0; i < totalAnswers; i++) {
+        int newAnswer;
+        bool badGap;
+        do {
+            if (i == 0) {
+                newAnswer = random(10, 24); // 10~23
+            } else {
+                newAnswer = random(1, 96); // 1~95
+            }
+            badGap = false;
+            for (int j = 0; j < i; j++) {
+                int diff = abs(newAnswer - modeValue[ANSWER][j]);
+                if (diff < 10 || diff > 30) { // 최소 10칸, 최대 30칸
+                    badGap = true;
+                    break;
+                }
+            }
+        } while (badGap);
+        modeValue[ANSWER][i] = newAnswer;
+        Serial.println("puzzle_answer_" + String(i + 1) + ":" + String(newAnswer));
+        has2wifi.Send((String)(const char *)my["device_name"],
+                      "puzzle_answer_" + String(i + 1), String(newAnswer));
+    }
+
     sendCommand("page pgWait");
     Serial.println("READY");
     AllNeoOn(RED);
@@ -144,5 +174,5 @@ void ReadyFunc(void)
     itemBoxUsed = false;        //박스 사용했는지 확인하는 변수 초기화
     BlinkTimer.deleteTimer(blinkTimerId);
     GameTimer.deleteTimer(gameTimerId);
-    ledcWrite(VibrationLedChannel, 0);
+    ledcWrite(VIBRATION_RANGE_PIN, 0);
 }

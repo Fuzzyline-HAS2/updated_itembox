@@ -20,7 +20,7 @@ void Puzzle(void)
             {
                 Serial.println("QUIZ SUCCEED");                                                 
                 sendCommand("wQuizSolved.en=1");                                    // Nextion으로 "해제 완료" 나레이션 출력 명령 전송
-                ledcWrite(VibrationLedChannel, 0);                                  // 진동모터 끄기
+                ledcWrite(VIBRATION_RANGE_PIN, 0);                                  // 진동모터 끄기
                 answerCnt = 0;                                                      // Puzzle의 현재정답 저장변수 초기화
                 detachInterrupt(encoderPinA);                                       // 하드웨어 인터럽트 종료 -> 엔코더 사용 막기 위해
                 detachInterrupt(encoderPinB);

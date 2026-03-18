@@ -14,7 +14,7 @@
 void setup() 
 {
     Serial.begin(115200);
-    has2wifi.Setup("badland");
+    has2wifi.Setup("badland_ruins", "Code3824@");
     NeopixelInit();
     RfidInit();
     MotorInit();

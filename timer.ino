@@ -16,7 +16,7 @@ void GameTimerFunc(){
     Serial.println("GameTimerCnt:"+String(nGameTimerCnt));
     if(nGameTimerCnt >= 6){
         ActivateFunc();
-        ledcWrite(VibrationLedChannel, 0);
+        ledcWrite(VIBRATION_RANGE_PIN, 0);
         GameTimer.deleteTimer(gameTimerId);        //게임 타이머 시작
         WifiTimer.deleteTimer(wifiTimerId);
         wifiTimerId = WifiTimer.setInterval(wifiTime,WifiIntervalFunc);
@@ -30,11 +30,11 @@ void GameTimerFunc(){
 void BlinkTimerFunc(){
     Serial.println("Blink!");
     if(blinkOn == true){
-        pixels[blinkNeo].lightColor(color[blinkColor]);
+        lightColor(pixels[blinkNeo], color[blinkColor]);
         blinkOn = false;
     }
     else{
-        pixels[blinkNeo].lightColor(color[BLACK]);
+        lightColor(pixels[blinkNeo], color[BLACK]);
         blinkOn = true;
     }
 
