@@ -17,6 +17,9 @@ void MotorInit()
 void BoxClose()
 {
     Serial.println("BOX Close");
+    pinMode(MOTOR_INA1_PIN, OUTPUT);      // WiFi 이후 핀 모드 복구
+    pinMode(MOTOR_INA2_PIN, OUTPUT);      // WiFi 이후 핀 모드 복구
+    ledcAttach(MOTOR_PWMA_PIN, MotorFreq, MotorResolution);  // LEDC 채널 재연결
     ledcWrite(MOTOR_PWMA_PIN, MotorMAX_DUTY_CYCLE - 1);
     digitalWrite(MOTOR_INA1_PIN, LOW);
     digitalWrite(MOTOR_INA2_PIN, HIGH);
@@ -28,6 +31,9 @@ void BoxClose()
 void BoxOpen()
 {
     Serial.println("BOX Open");
+    pinMode(MOTOR_INA1_PIN, OUTPUT);      // WiFi 이후 핀 모드 복구
+    pinMode(MOTOR_INA2_PIN, OUTPUT);      // WiFi 이후 핀 모드 복구
+    ledcAttach(MOTOR_PWMA_PIN, MotorFreq, MotorResolution);  // LEDC 채널 재연결
     ledcWrite(MOTOR_PWMA_PIN, MotorMAX_DUTY_CYCLE - 1);
     digitalWrite(MOTOR_INA1_PIN, HIGH);
     digitalWrite(MOTOR_INA2_PIN, LOW);
@@ -41,6 +47,7 @@ void MotorStop()
     Serial.println("모터 스탑");
     digitalWrite(MOTOR_INA1_PIN, LOW);
     digitalWrite(MOTOR_INA2_PIN, LOW);
+    // ledcWrite(0) 제거 — LEDC 채널 연결 유지 (0으로 쓰면 채널이 분리됨)
 }
 
 void EncoderVibrationStrength(int answer)
