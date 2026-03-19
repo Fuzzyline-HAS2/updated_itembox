@@ -133,8 +133,8 @@ void PuzzleSolved()
   itemBoxSelfOpen = true;                                                         // 태그하면 아이템박스가 open 상태 임으로 메인에서 open 명령 들어와도 재실행되지 않게 제한하는 bool 변수
   Serial.println("PuzzleSolved");
   AllNeoOn(BLUE);                       // 엔코더 네오픽셀의 빨간색 포인틀 없애기 위해 전체 네오픽셀 파란색으로 한번더 변환
+  delay(2000);
   sendCommand("page pgItemOpen");       // Nextion의 페이지 pgItemOpen으로 변환
-  delay(200);
   sendCommand("wOutTagged.en=1");       // Nextion에서 아박 열리는 효과음 재생
   ExpSend();                            // 할당받은 EXP양 UI설정을 위해 Nextion으로 전송
   BatteryPackSend();                    // 할당받은 배터리팩양 UI설정을 위해 Nextion으로 전송

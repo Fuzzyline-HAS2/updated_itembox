@@ -34,8 +34,8 @@ void DataChanged()
             if(itemBoxSelfOpen == false){                           //플레이어가 스스로 열었으면 true 여서 이미 열었다는 의미
                 Serial.println("PuzzleSolved");
                 AllNeoOn(BLUE);
+                delay(2000);
                 sendCommand("page pgItemOpen");
-                delay(200);
                 sendCommand("wOutTagged.en=1");
                 ExpSend();
                 BatteryPackSend();
@@ -115,25 +115,26 @@ void ActivateFunc(void)
 }
 void ReadyFunc(void)
 {
-    int nCycleCnt = 0;
-    for(int i = HI1; i <= FI2; i++){
-        batteryPackRnd[i].nVal = 0;
-        Serial.println(batteryPackRnd[i].strDevice + ":" + (String)batteryPackRnd[i].nVal);
-    }
-    while(nCycleCnt < 10){
-        long rndDevice = random(0,10);
-        if(batteryPackRnd[rndDevice].nVal < 3)
-        {
-            batteryPackRnd[rndDevice].nVal++;
-            nCycleCnt++;
-        }
-    }
-    for(int i = HI1; i <= FI2; i++)
-        Serial.println(batteryPackRnd[i].strDevice + ":" + (String)batteryPackRnd[i].nVal);
-    for(int i = HI1; i <= FI2; i++){
-        if(batteryPackRnd[i].nVal != 0)
-            has2wifi.Send(batteryPackRnd[i].strDevice, "battery_pack", (String)batteryPackRnd[i].nVal);
-    }
+    // 이제 서버 -> 기기로 랜덤으로 배터리팩을 분배하기 때문에 주석처리 했습니다. 
+    // int nCycleCnt = 0;
+    // for(int i = HI1; i <= FI2; i++){
+    //     batteryPackRnd[i].nVal = 0;
+    //     Serial.println(batteryPackRnd[i].strDevice + ":" + (String)batteryPackRnd[i].nVal);
+    // }
+    // while(nCycleCnt < 10){
+    //     long rndDevice = random(0,10);
+    //     if(batteryPackRnd[rndDevice].nVal < 3)
+    //     {
+    //         batteryPackRnd[rndDevice].nVal++;
+    //         nCycleCnt++;
+    //     }
+    // }
+    // for(int i = HI1; i <= FI2; i++)
+    //     Serial.println(batteryPackRnd[i].strDevice + ":" + (String)batteryPackRnd[i].nVal);
+    // for(int i = HI1; i <= FI2; i++){
+    //     if(batteryPackRnd[i].nVal != 0)
+    //         has2wifi.Send(batteryPackRnd[i].strDevice, "battery_pack", (String)batteryPackRnd[i].nVal);
+    // }
 
     // 퍼즐 정답 랜덤 생성
     // - 1번 정답: 10~23 고정 범위

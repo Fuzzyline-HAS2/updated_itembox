@@ -1,7 +1,7 @@
 void MotorInit()
 {
     //Linear Motor Init
-    pinMode(BOXSWITCH_PIN,INPUT_PULLUP);
+    pinMode(BOXSWITCH_PIN, INPUT);  // GPIO36은 input-only 핀 - 외부 풀업 저항 필요
     pinMode(MOTOR_INA1_PIN, OUTPUT);
     pinMode(MOTOR_INA2_PIN, OUTPUT);
     ledcAttach(MOTOR_PWMA_PIN, MotorFreq, MotorResolution);

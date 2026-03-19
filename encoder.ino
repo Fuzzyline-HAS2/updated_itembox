@@ -3,7 +3,7 @@ void EncoderInit()
     Serial.println("ENCODER INIT");     //엔코더 핀 관련 초기화
     pinMode(encoderPinA, INPUT_PULLUP);
     pinMode(encoderPinB, INPUT_PULLUP);
-    pinMode(buttonPin, INPUT_PULLUP);
+    pinMode(buttonPin, INPUT);  // GPIO34는 input-only 핀 - 외부 풀업 저항 필요
 }
 
 void updateEncoder()
