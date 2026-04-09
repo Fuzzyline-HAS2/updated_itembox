@@ -31,8 +31,9 @@ void Puzzle(void)
                 detachInterrupt(encoderPinB);
                 BlinkTimer.deleteTimer(blinkTimerId);                               // 황색점멸 타이머 초기화 위해 종료
                 BlinkTimerStart(PN532, YELLOW);                                     // 외부 RFID 네오 황색 점멸
+                puzzleMode = false;
                 WifiTimer.deleteTimer(wifiTimerId);
-                wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);    // 엔코더 종료되어서 와이파이 다시 활성화
+                wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);
                 ptrCurrentMode = RfidLoopOutter;                                    // ptr 메인 함수 Puzzle -> RFIDOutter로 변경: 태그하여 노브 끝내기 위해
                 ptrRfidMode = PuzzleSolved;                                         // ChekingPlayer 실행시 실행되는 ptr함수 주소가 WaitFunc -> puzzleSolved로 변경: 아박 열기위해
             }

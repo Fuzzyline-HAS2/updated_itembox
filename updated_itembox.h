@@ -119,6 +119,7 @@ void ItemTook();
 
 
 //****************************************MOTOR SETUP****************************************************************
+bool puzzleMode = false;         // 퍼즐 진행 중 여부 (WiFi 수신 시 노이즈 차단용)
 bool boxMotorRunning = false;    // 모터 동작 중 여부
 bool boxClosing = false;         // true=닫히는 중, false=열리는 중
 bool pendingOpenScreen = false;  // BOX Opened 후 Nextion 화면 전환 대기
