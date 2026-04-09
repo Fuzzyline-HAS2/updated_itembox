@@ -98,6 +98,18 @@ void DataChanged()
       Serial.println("puzzle_reset_time 서버 수신: " + String(serverResetSec) + "ms");
   }
 
+  // brightness 서버 수신 (0~100% → 0~255)
+  int serverBrightness = my["brightness"].as<int>();
+  int prevBrightness = cur["brightness"].as<int>();
+  if (forceAnswerUpdate || serverBrightness != prevBrightness) {
+      uint8_t neoVal = (uint8_t)(serverBrightness * 255 / 100);
+      for (int i = 0; i < NeopixelNum; i++) {
+          pixels[i].setBrightness(neoVal);
+          pixels[i].show();
+      }
+      Serial.println("brightness 서버 수신: " + String(serverBrightness) + "% -> " + String(neoVal));
+  }
+
   cur = my; // cur 데이터 그룹에 현재 읽어온 데이터 저장
 }
 void WaitFunc(void)
