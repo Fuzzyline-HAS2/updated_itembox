@@ -58,11 +58,9 @@ int wifiTimerId;
 int gameTimerId;
 int blinkTimerId;
 
-unsigned long wifiTime = 2000;    // 1sec
-unsigned long gameTime = 5000;    // 3sec
-unsigned long blinkTime = 1300;   // 1sec
-
-volatile unsigned int nGameTimerCnt = 0;
+unsigned long wifiTime = 2000;        // 2sec
+unsigned long puzzleResetTime = 30000; // 퍼즐 리셋 시간 (ms), 서버 수신값으로 갱신됨
+unsigned long blinkTime = 1300;        // 1.3sec
 //****************************************Nextion SETUP****************************************************************
 HardwareSerial nexHwSerial(2);
 String nextion_str = "";
@@ -121,6 +119,9 @@ void ItemTook();
 
 
 //****************************************MOTOR SETUP****************************************************************
+bool boxMotorRunning = false;    // 모터 동작 중 여부
+bool boxClosing = false;         // true=닫히는 중, false=열리는 중
+bool pendingOpenScreen = false;  // BOX Opened 후 Nextion 화면 전환 대기
 const int MotorFreq = 5000;
 const int MotorResolution = 8;
 const int MotorLedChannel = 3;

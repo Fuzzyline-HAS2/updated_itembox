@@ -16,30 +16,30 @@ void MotorInit()
 }
 void BoxClose()
 {
+    if (digitalRead(BOXSWITCH_PIN) == HIGH) { Serial.println("BOX already closed"); return; } // HIGH = 닫힘
     Serial.println("BOX Close");
-    pinMode(MOTOR_INA1_PIN, OUTPUT);      // WiFi 이후 핀 모드 복구
-    pinMode(MOTOR_INA2_PIN, OUTPUT);      // WiFi 이후 핀 모드 복구
-    ledcAttach(MOTOR_PWMA_PIN, MotorFreq, MotorResolution);  // LEDC 채널 재연결
+    pinMode(MOTOR_INA1_PIN, OUTPUT);
+    pinMode(MOTOR_INA2_PIN, OUTPUT);
+    ledcAttach(MOTOR_PWMA_PIN, MotorFreq, MotorResolution);
     ledcWrite(MOTOR_PWMA_PIN, MotorMAX_DUTY_CYCLE - 1);
     digitalWrite(MOTOR_INA1_PIN, LOW);
     digitalWrite(MOTOR_INA2_PIN, HIGH);
-    delay(4000);
-    MotorStop();
-    Serial.println("BOX Closed");
+    boxMotorRunning = true;
+    boxClosing = true;
 }
 
 void BoxOpen()
 {
+    if (digitalRead(BOXSWITCH_PIN) == LOW) { Serial.println("BOX already open"); return; } // LOW = 열림
     Serial.println("BOX Open");
-    pinMode(MOTOR_INA1_PIN, OUTPUT);      // WiFi 이후 핀 모드 복구
-    pinMode(MOTOR_INA2_PIN, OUTPUT);      // WiFi 이후 핀 모드 복구
-    ledcAttach(MOTOR_PWMA_PIN, MotorFreq, MotorResolution);  // LEDC 채널 재연결
+    pinMode(MOTOR_INA1_PIN, OUTPUT);
+    pinMode(MOTOR_INA2_PIN, OUTPUT);
+    ledcAttach(MOTOR_PWMA_PIN, MotorFreq, MotorResolution);
     ledcWrite(MOTOR_PWMA_PIN, MotorMAX_DUTY_CYCLE - 1);
     digitalWrite(MOTOR_INA1_PIN, HIGH);
     digitalWrite(MOTOR_INA2_PIN, LOW);
-    delay(4000);
-    MotorStop();
-    Serial.println("BOX Opened");
+    boxMotorRunning = true;
+    boxClosing = false;
 }
 
 void MotorStop()

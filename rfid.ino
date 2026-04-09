@@ -117,7 +117,7 @@ void StartPuzzle()
   Serial.println("StartPuzzle");
   WifiTimer.deleteTimer(wifiTimerId);                           // 엔코더 렉을 없애기 위해 wifi read 엔코더 사용동안에 중단
   GameTimer.deleteTimer(gameTimerId);
-  gameTimerId = GameTimer.setInterval(gameTime, GameTimerFunc); // puzzle 함수 실행동안 n초 이상 입력이 없으면 초기화 하기위해 시간을 재는 타이머 시작
+  GameTimer.deleteTimer(gameTimerId); // 타이머는 첫 정답 후 Game_system.ino에서 시작
   answerCnt = 0;
   ptrCurrentMode = Puzzle;                                      // ptr함수의 주소를 RFIDOuter -> Puzzle로 변환
   AllNeoOn(BLUE);                                               // puzzle 함수 진행동안 전체 네오픽셀 파란색 유지
@@ -132,13 +132,12 @@ void PuzzleSolved()
 {
   itemBoxSelfOpen = true;                                                         // 태그하면 아이템박스가 open 상태 임으로 메인에서 open 명령 들어와도 재실행되지 않게 제한하는 bool 변수
   Serial.println("PuzzleSolved");
-  AllNeoOn(BLUE);                       // 엔코더 네오픽셀의 빨간색 포인틀 없애기 위해 전체 네오픽셀 파란색으로 한번더 변환
-  delay(2000);
-  sendCommand("page pgItemOpen");       // Nextion의 페이지 pgItemOpen으로 변환
-  sendCommand("wOutTagged.en=1");       // Nextion에서 아박 열리는 효과음 재생
-  ExpSend();                            // 할당받은 EXP양 UI설정을 위해 Nextion으로 전송
-  BatteryPackSend();                    // 할당받은 배터리팩양 UI설정을 위해 Nextion으로 전송
-  BoxOpen();                            // 아박 오픈(리니어 모터 ON)
+  AllNeoOn(BLUE);
+  sendCommand("wOutTagged.en=1");       // 효과음 재생
+  ExpSend();
+  BatteryPackSend();
+  BoxOpen();                            // 아박 오픈 (논블로킹, 열리면 loop()에서 Nextion 전환)
+  pendingOpenScreen = true;             // BOX Opened 이후 pgItemOpen 전환 예약
   BlinkTimer.deleteTimer(blinkTimerId); // 전에 사용된 BlinkTimer를 초기화하고 다시 시작하기 위해 종료
   BlinkTimerStart(INNER, YELLOW);       // 내부태그 네오픽셀 노란색 점멸 시작
   GameTimer.deleteTimer(gameTimerId);   // Puzzle함수 -> PuzzleSolved함수 진행되면 이후로는 Activate로 초기화 되지 않게 타이머 종료(기획대로)

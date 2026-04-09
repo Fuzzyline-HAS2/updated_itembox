@@ -8,7 +8,6 @@ void EncoderInit()
 
 void updateEncoder()
 {
-    nGameTimerCnt = 0;                      //게임 타이머 초기화
     int MSB = digitalRead(encoderPinA);     // MSB = most significant bit
     int LSB = digitalRead(encoderPinB);     // LSB = least significant bit
     

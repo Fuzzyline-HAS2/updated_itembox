@@ -1,7 +1,7 @@
 void TimerInit()
 {
     wifiTimerId = WifiTimer.setInterval(wifiTime,WifiIntervalFunc);
-    gameTimerId = GameTimer.setInterval(gameTime,GameTimerFunc);
+    gameTimerId = GameTimer.setInterval(puzzleResetTime,GameTimerFunc);
     blinkTimerId = BlinkTimer.setInterval(blinkTime,BlinkTimerFunc);
     GameTimer.deleteTimer(gameTimerId);
     BlinkTimer.deleteTimer(blinkTimerId); 
@@ -12,19 +12,14 @@ void WifiIntervalFunc()
     has2wifi.Loop(DataChanged);
 }
 void GameTimerFunc(){
-    nGameTimerCnt++;
-    Serial.println("GameTimerCnt:"+String(nGameTimerCnt));
-    if(nGameTimerCnt >= 6){
-        ActivateFunc();
-        ledcWrite(VIBRATION_RANGE_PIN, 0);
-        GameTimer.deleteTimer(gameTimerId);        //게임 타이머 시작
-        WifiTimer.deleteTimer(wifiTimerId);
-        wifiTimerId = WifiTimer.setInterval(wifiTime,WifiIntervalFunc);
-        nGameTimerCnt = 0;
-        detachInterrupt(encoderPinA);           //엔코더 사용 막기
-        detachInterrupt(encoderPinB);
-        encoderValue = 165;
-    }
+    ActivateFunc();
+    ledcWrite(VIBRATION_RANGE_PIN, 0);
+    GameTimer.deleteTimer(gameTimerId);
+    WifiTimer.deleteTimer(wifiTimerId);
+    wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);
+    detachInterrupt(encoderPinA);
+    detachInterrupt(encoderPinB);
+    encoderValue = 165;
 }
 
 void BlinkTimerFunc(){

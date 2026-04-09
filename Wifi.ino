@@ -1,15 +1,19 @@
 void DataChanged()
 {
   static StaticJsonDocument<1000> cur;   //저장되어 있는 cur과 읽어온 my 값과 비교후 실행
+  bool forceAnswerUpdate = false;
     if((String)(const char*)my["game_state"] != (String)(const char*)cur["game_state"])
-    {  
+    {
         if((String)(const char*)my["game_state"] == "setting"){
+            forceAnswerUpdate = true;
             SettingFunc();
         }
         else if((String)(const char*)my["game_state"] == "ready"){
+            forceAnswerUpdate = true;
             ReadyFunc();
         }
         else if((String)(const char*)my["game_state"] == "activate"){
+            forceAnswerUpdate = true;
             ActivateFunc();
         }
     }
@@ -75,6 +79,25 @@ void DataChanged()
         }
         
     }
+  // 퍼즐 정답 서버 수신
+  const char* answerKeys[] = {"puzzle_answer_1", "puzzle_answer_2", "puzzle_answer_3"};
+  int totalAnswers = modeValue[RANGE][ANSWER_CNT];
+  for (int i = 0; i < totalAnswers; i++) {
+      int serverVal = my[answerKeys[i]].as<int>();
+      int prevVal = cur[answerKeys[i]].as<int>();
+      if (serverVal != 0 && (forceAnswerUpdate || serverVal != prevVal)) {
+          modeValue[ANSWER][i] = serverVal;
+          Serial.println(String(answerKeys[i]) + " 서버 수신: " + String(serverVal));
+      }
+  }
+
+  // puzzle_reset_time 서버 수신
+  int serverResetSec = my["puzzle_reset_time"].as<int>();
+  if (serverResetSec != 0 && (forceAnswerUpdate || serverResetSec != (int)(cur["puzzle_reset_time"] | 0))) {
+      puzzleResetTime = (unsigned long)serverResetSec;
+      Serial.println("puzzle_reset_time 서버 수신: " + String(serverResetSec) + "ms");
+  }
+
   cur = my; // cur 데이터 그룹에 현재 읽어온 데이터 저장
 }
 void WaitFunc(void)
@@ -135,35 +158,6 @@ void ReadyFunc(void)
     //     if(batteryPackRnd[i].nVal != 0)
     //         has2wifi.Send(batteryPackRnd[i].strDevice, "battery_pack", (String)batteryPackRnd[i].nVal);
     // }
-
-    // 퍼즐 정답 랜덤 생성
-    // - 1번 정답: 10~23 고정 범위
-    // - 2~3번 정답: 1~95 범위
-    // - 정답끼리 간격: 최소 10칸, 최대 30칸
-    int totalAnswers = modeValue[RANGE][ANSWER_CNT]; // 3
-    for (int i = 0; i < totalAnswers; i++) {
-        int newAnswer;
-        bool badGap;
-        do {
-            if (i == 0) {
-                newAnswer = random(10, 24); // 10~23
-            } else {
-                newAnswer = random(1, 96); // 1~95
-            }
-            badGap = false;
-            for (int j = 0; j < i; j++) {
-                int diff = abs(newAnswer - modeValue[ANSWER][j]);
-                if (diff < 10 || diff > 30) { // 최소 10칸, 최대 30칸
-                    badGap = true;
-                    break;
-                }
-            }
-        } while (badGap);
-        modeValue[ANSWER][i] = newAnswer;
-        Serial.println("puzzle_answer_" + String(i + 1) + ":" + String(newAnswer));
-        has2wifi.Send((String)(const char *)my["device_name"],
-                      "puzzle_answer_" + String(i + 1), String(newAnswer));
-    }
 
     sendCommand("page pgWait");
     Serial.println("READY");

@@ -16,6 +16,11 @@ void Puzzle(void)
             Serial.println("Correct Answer");
             NeoBlink(ENCODER, GREEN, 5, 250);   // 엔코더 네오픽셀 적색 0.25s 간격으로 5번 점멸 -> Delay사용으로 이 함수에 2초 머물러 있음
             answerCnt++;                        // 정답시 다음 문제로 넘어가기 위해 카운트 +1
+            if (answerCnt == 1) {                                                  // 첫 번째 정답 → 리셋 타이머 시작
+                GameTimer.deleteTimer(gameTimerId);
+                gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc);
+                Serial.println("리셋 타이머 시작: " + String(puzzleResetTime) + "ms");
+            }
             if (answerCnt >= modeValue[RANGE][ANSWER_CNT])                        // 모든 정답을 맞추었을때
             {
                 Serial.println("QUIZ SUCCEED");                                                 
@@ -28,7 +33,6 @@ void Puzzle(void)
                 BlinkTimerStart(PN532, YELLOW);                                     // 외부 RFID 네오 황색 점멸
                 WifiTimer.deleteTimer(wifiTimerId);
                 wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);    // 엔코더 종료되어서 와이파이 다시 활성화
-                nGameTimerCnt = 0;                                                  // 게임 타이머 초기화
                 ptrCurrentMode = RfidLoopOutter;                                    // ptr 메인 함수 Puzzle -> RFIDOutter로 변경: 태그하여 노브 끝내기 위해
                 ptrRfidMode = PuzzleSolved;                                         // ChekingPlayer 실행시 실행되는 ptr함수 주소가 WaitFunc -> puzzleSolved로 변경: 아박 열기위해
             }
