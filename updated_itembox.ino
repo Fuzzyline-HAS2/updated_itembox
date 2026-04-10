@@ -40,6 +40,8 @@ void loop()
             Serial.println("BOX Opened");
             if (pendingOpenScreen) {
                 sendCommand("page pgItemOpen");
+                ExpSend();
+                BatteryPackSend();
                 pendingOpenScreen = false;
             }
         }

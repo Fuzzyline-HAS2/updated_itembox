@@ -133,8 +133,6 @@ void PuzzleSolved()
   Serial.println("PuzzleSolved");
   AllNeoOn(BLUE);
   sendCommand("wOutTagged.en=1");       // 효과음 재생
-  ExpSend();
-  BatteryPackSend();
   BoxOpen();                            // 아박 오픈 (논블로킹, 열리면 loop()에서 Nextion 전환)
   pendingOpenScreen = true;             // BOX Opened 이후 pgItemOpen 전환 예약
   BlinkTimer.deleteTimer(blinkTimerId); // 전에 사용된 BlinkTimer를 초기화하고 다시 시작하기 위해 종료
