@@ -133,8 +133,8 @@ const int VibrationLedChannel = 4;
 const int MotorMAX_DUTY_CYCLE = (int)(pow(2, MotorResolution) - 1);
 const int VibtationMAX_DUTY_CYCLE = (int)(pow(2, MotorResolution) - 1);
 void MotorInit();
-void MotorUp();
-void MotorDown();
+void BoxOpen(bool force = false);
+void BoxClose(bool force = false);
 void MotorStop();
 void EncoderVibrationStrength(int answer);
 
