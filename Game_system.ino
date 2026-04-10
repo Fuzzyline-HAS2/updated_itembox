@@ -3,12 +3,14 @@
  */
 void Puzzle(void)
 {
-    // 외부 RFID 태그 유지 확인
+    // 외부 RFID 태그 유지 확인 + 감지 시 리셋 타이머 갱신
     {
         byte pn532_buf[64] = {0};
         if (nfc[OUTPN532].sendCommandCheckAck(pn532_buf, 1)) {
             if (nfc[OUTPN532].startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A)) {
                 rfidLastSeenTime = millis();
+                GameTimer.deleteTimer(gameTimerId);
+                gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc);
             }
         }
     }
@@ -22,14 +24,6 @@ void Puzzle(void)
         ptrCurrentMode = RfidLoopOutter;
         ptrRfidMode = ResumePuzzle;
         return;
-    }
-
-    // 엔코더 움직임 감지 → 비입력 타이머 리셋
-    static long lastTrackedEncoder = 0;
-    if (encoderValue != lastTrackedEncoder) {
-        lastTrackedEncoder = encoderValue;
-        GameTimer.deleteTimer(gameTimerId);
-        gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc);
     }
 
     int currentAnswer = modeValue[ANSWER][answerCnt];   // Puzzle 함수를 진행하는 동안 현재의 정답 저장용 변수, 몇번째 문제인지 저장하는건 answerCnt 전연 변수
