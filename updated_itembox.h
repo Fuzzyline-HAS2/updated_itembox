@@ -109,11 +109,14 @@ bool rfid_tag;
 bool rfid_timer_assess;
 
 bool rfid_init_complete[2];
+unsigned long rfidLastSeenTime = 0;            // 퍼즐 중 외부 RFID 마지막 감지 시각
+const unsigned long rfidPuzzleTimeout = 2000;  // 퍼즐 RFID 이탈 타임아웃 (ms)
 void RfidInit(void);
 void RfidLoopInner();
 void RfidLoopOutter();
 void CheckingPlayers(uint8_t rfidData[32]);
 void StartPuzzle();
+void ResumePuzzle();
 void PuzzleSolved();
 void ItemTook();
 

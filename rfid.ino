@@ -118,9 +118,24 @@ void StartPuzzle()
   GameTimer.deleteTimer(gameTimerId); // 타이머는 첫 정답 후 Game_system.ino에서 시작
   puzzleMode = true;                  // WiFi 수신 시 엔코더 노이즈 차단 모드 ON
   answerCnt = 0;
+  rfidLastSeenTime = millis();        // RFID 이탈 감지 기준 시각 초기화
   ptrCurrentMode = Puzzle;                                      // ptr함수의 주소를 RFIDOuter -> Puzzle로 변환
   AllNeoOn(BLUE);                                               // puzzle 함수 진행동안 전체 네오픽셀 파란색 유지
   attachInterrupt(encoderPinA, updateEncoder, CHANGE);          // 엔코더 하드웨어 인터럽트 활성화
+  attachInterrupt(encoderPinB, updateEncoder, CHANGE);
+}
+
+/**
+ * @brief 퍼즐 중 RFID 이탈 후 다시 태그했을때 실행 - answerCnt 유지한 채 퍼즐 재진입
+ */
+void ResumePuzzle()
+{
+  Serial.println("ResumePuzzle - answerCnt: " + String(answerCnt));
+  puzzleMode = true;
+  rfidLastSeenTime = millis();
+  ptrCurrentMode = Puzzle;
+  AllNeoOn(BLUE);
+  attachInterrupt(encoderPinA, updateEncoder, CHANGE);
   attachInterrupt(encoderPinB, updateEncoder, CHANGE);
 }
 

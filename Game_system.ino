@@ -3,8 +3,29 @@
  */
 void Puzzle(void)
 {
+    // 외부 RFID 태그 유지 확인
+    {
+        byte pn532_buf[64] = {0};
+        if (nfc[OUTPN532].sendCommandCheckAck(pn532_buf, 1)) {
+            if (nfc[OUTPN532].startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A)) {
+                rfidLastSeenTime = millis();
+            }
+        }
+    }
+    if (millis() - rfidLastSeenTime > rfidPuzzleTimeout) {
+        Serial.println("Puzzle Paused: RFID 태그 없음");
+        puzzleMode = false;
+        ledcWrite(VIBRATION_RANGE_PIN, 0);
+        AllNeoOn(YELLOW);
+        detachInterrupt(encoderPinA);
+        detachInterrupt(encoderPinB);
+        ptrCurrentMode = RfidLoopOutter;
+        ptrRfidMode = ResumePuzzle;
+        return;
+    }
+
     int currentAnswer = modeValue[ANSWER][answerCnt];   // Puzzle 함수를 진행하는 동안 현재의 정답 저장용 변수, 몇번째 문제인지 저장하는건 answerCnt 전연 변수
-    EncoderNeopixelOn();                                // 현재 엔코더 위치 적색으로 표현하기 위해 네오픽셀 켜주는 함수 
+    EncoderNeopixelOn();                                // 현재 엔코더 위치 적색으로 표현하기 위해 네오픽셀 켜주는 함수
     EncoderVibrationStrength(currentAnswer);            // 현재 엔코더 위치에 따라 진동모터 세기 결정해주는 함수
 
     if (digitalRead(buttonPin) == LOW)                                                                      // 엔코더 스위치 눌렸을때
@@ -14,6 +35,7 @@ void Puzzle(void)
         if (differenceValue == 0)               // 정답일때
         {
             Serial.println("Correct Answer");
+            rfidLastSeenTime = millis();        // NeoBlink(2.5초 블로킹) 전 타임스탬프 갱신 - 오탐 방지
             NeoBlink(ENCODER, GREEN, 5, 250);   // 엔코더 네오픽셀 적색 0.25s 간격으로 5번 점멸 -> Delay사용으로 이 함수에 2초 머물러 있음
             answerCnt++;                        // 정답시 다음 문제로 넘어가기 위해 카운트 +1
             if (answerCnt == 1) {                                                  // 첫 번째 정답 → 리셋 타이머 시작
@@ -40,7 +62,8 @@ void Puzzle(void)
         }
         else                                    // 틀렸을때
         {
-            Serial.println("Wrong Answer");     
+            Serial.println("Wrong Answer");
+            rfidLastSeenTime = millis();        // NeoBlink(2.5초 블로킹) 전 타임스탬프 갱신 - 오탐 방지
             NeoBlink(ENCODER, RED, 5, 250);     //엔코더 네오픽셀 적색 0.25s 간격으로 5번 점멸 -> Delay사용으로 이 함수에 2초 머물러 있음
         }
         encoderValue = currentEncoderValue;     // 네오픽셀 점멸 시 마지막으로 저장된 엔코더 값 저장해서 현재 엔코더 값이 바뀌어도 되돌아가게 하는 변수 저장
