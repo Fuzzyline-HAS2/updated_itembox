@@ -43,7 +43,7 @@ void DataChanged()
                 sendCommand("wOutTagged.en=1");
                 ExpSend();
                 BatteryPackSend();
-                BoxOpen(true);
+                BoxOpen();
                 lightColor(pixels[INNER], color[YELLOW]);
                 ptrCurrentMode = RfidLoopInner;
                 ptrRfidMode = ItemTook;
@@ -121,7 +121,7 @@ void SettingFunc(void)
     sendCommand("page pgWait");
     Serial.println("SETTING");
     AllNeoOn(WHITE);
-    BoxOpen(true);
+    BoxOpen();
     encoderValue = 165;
     answerCnt = 0;
     ptrCurrentMode = WaitFunc;
@@ -139,7 +139,7 @@ void ActivateFunc(void)
     answerCnt = 0;
     Serial.println("ACTIVATE");
     AllNeoOn(YELLOW);
-    BoxClose(true);
+    BoxClose();
     ptrCurrentMode = RfidLoopOutter;
     ptrRfidMode = StartPuzzle;
     itemBoxSelfOpen = false;    //퍼즐함수 성공했는지 확인하는 변수초기화
@@ -174,7 +174,7 @@ void ReadyFunc(void)
     sendCommand("page pgWait");
     Serial.println("READY");
     AllNeoOn(RED);
-    BoxClose(true);
+    BoxClose();
     ptrCurrentMode = WaitFunc;
     ptrRfidMode = WaitFunc;
     itemBoxSelfOpen = false;    //퍼즐함수 성공했는지 확인하는 변수초기화

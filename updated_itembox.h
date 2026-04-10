@@ -126,8 +126,8 @@ bool puzzleMode = false;         // 퍼즐 진행 중 여부 (WiFi 수신 시 �
 bool boxMotorRunning = false;    // 모터 동작 중 여부
 bool boxClosing = false;         // true=닫히는 중, false=열리는 중
 bool pendingOpenScreen = false;  // BOX Opened 후 Nextion 화면 전환 대기
-unsigned long motorStartTime = 0;           // 모터 구동 시작 시각
-const unsigned long motorMinRunTime = 500;  // 최소 구동 시간(ms) - 스위치 즉시 정지 방지
+unsigned long motorStartTime = 0;            // 모터 구동 시작 시각
+const unsigned long motorOpenDuration = 3000; // 열기 모터 구동 시간(ms) - 스위치 미사용, 타이머로 정지
 const int MotorFreq = 5000;
 const int MotorResolution = 8;
 const int MotorLedChannel = 3;
@@ -135,8 +135,8 @@ const int VibrationLedChannel = 4;
 const int MotorMAX_DUTY_CYCLE = (int)(pow(2, MotorResolution) - 1);
 const int VibtationMAX_DUTY_CYCLE = (int)(pow(2, MotorResolution) - 1);
 void MotorInit();
-void BoxOpen(bool force = false);
-void BoxClose(bool force = false);
+void BoxOpen();
+void BoxClose();
 void MotorStop();
 void EncoderVibrationStrength(int answer);
 

@@ -14,9 +14,9 @@ void MotorInit()
     ledcAttach(VIBRATION_RANGE_PIN, MotorFreq, MotorResolution);
     ledcWrite(VIBRATION_RANGE_PIN, 0);
 }
-void BoxClose(bool force)
+void BoxClose()
 {
-    if (!force && digitalRead(BOXSWITCH_PIN) == HIGH) { Serial.println("BOX already closed"); return; } // HIGH = 닫힘
+    if (digitalRead(BOXSWITCH_PIN) == HIGH) { Serial.println("BOX already closed"); return; } // HIGH = 닫힘 확인, 이미 닫혀있으면 스킵
     Serial.println("BOX Close");
     pinMode(MOTOR_INA1_PIN, OUTPUT);
     pinMode(MOTOR_INA2_PIN, OUTPUT);
@@ -29,9 +29,9 @@ void BoxClose(bool force)
     boxClosing = true;
 }
 
-void BoxOpen(bool force)
+void BoxOpen()
 {
-    if (!force && digitalRead(BOXSWITCH_PIN) == LOW) { Serial.println("BOX already open"); return; } // LOW = 열림
+    // 스위치 상태 확인 없이 무조건 모터 구동 (타이머로 정지)
     Serial.println("BOX Open");
     pinMode(MOTOR_INA1_PIN, OUTPUT);
     pinMode(MOTOR_INA2_PIN, OUTPUT);

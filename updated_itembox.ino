@@ -29,20 +29,24 @@ void setup()
 }
 void loop()
 {
-    if (boxMotorRunning && millis() - motorStartTime >= motorMinRunTime) {
-        if (boxClosing && digitalRead(BOXSWITCH_PIN) == HIGH) {  // HIGH = 닫힘 감지
-            MotorStop();
-            boxMotorRunning = false;
-            Serial.println("BOX Closed");
-        } else if (!boxClosing && digitalRead(BOXSWITCH_PIN) == LOW) {  // LOW = 열림 감지
-            MotorStop();
-            boxMotorRunning = false;
-            Serial.println("BOX Opened");
-            if (pendingOpenScreen) {
-                sendCommand("page pgItemOpen");
-                ExpSend();
-                BatteryPackSend();
-                pendingOpenScreen = false;
+    if (boxMotorRunning) {
+        if (boxClosing) {
+            if (digitalRead(BOXSWITCH_PIN) == HIGH) {  // 닫힘 감지 → 모터 정지
+                MotorStop();
+                boxMotorRunning = false;
+                Serial.println("BOX Closed");
+            }
+        } else {
+            if (millis() - motorStartTime >= motorOpenDuration) {  // 타이머 만료 → 모터 정지
+                MotorStop();
+                boxMotorRunning = false;
+                Serial.println("BOX Opened");
+                if (pendingOpenScreen) {
+                    sendCommand("page pgItemOpen");
+                    ExpSend();
+                    BatteryPackSend();
+                    pendingOpenScreen = false;
+                }
             }
         }
     }
