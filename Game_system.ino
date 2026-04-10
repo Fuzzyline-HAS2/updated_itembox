@@ -24,6 +24,16 @@ void Puzzle(void)
         return;
     }
 
+    // 엔코더 움직임 감지 → 비입력 타이머 리셋 (answerCnt > 0 일때만)
+    static long lastTrackedEncoder = 0;
+    if (encoderValue != lastTrackedEncoder) {
+        lastTrackedEncoder = encoderValue;
+        if (answerCnt > 0) {
+            GameTimer.deleteTimer(gameTimerId);
+            gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc);
+        }
+    }
+
     int currentAnswer = modeValue[ANSWER][answerCnt];   // Puzzle 함수를 진행하는 동안 현재의 정답 저장용 변수, 몇번째 문제인지 저장하는건 answerCnt 전연 변수
     EncoderNeopixelOn();                                // 현재 엔코더 위치 적색으로 표현하기 위해 네오픽셀 켜주는 함수
     EncoderVibrationStrength(currentAnswer);            // 현재 엔코더 위치에 따라 진동모터 세기 결정해주는 함수
@@ -38,10 +48,11 @@ void Puzzle(void)
             rfidLastSeenTime = millis();        // NeoBlink(2.5초 블로킹) 전 타임스탬프 갱신 - 오탐 방지
             NeoBlink(ENCODER, GREEN, 5, 250);   // 엔코더 네오픽셀 적색 0.25s 간격으로 5번 점멸 -> Delay사용으로 이 함수에 2초 머물러 있음
             answerCnt++;                        // 정답시 다음 문제로 넘어가기 위해 카운트 +1
-            if (answerCnt == 1) {                                                  // 첫 번째 정답 → 리셋 타이머 시작
+            if (answerCnt == 1) {                                                  // 첫 번째 정답 → 비입력 리셋 타이머 시작
                 GameTimer.deleteTimer(gameTimerId);
                 gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc);
-                Serial.println("리셋 타이머 시작: " + String(puzzleResetTime) + "ms");
+                lastTrackedEncoder = encoderValue;                                 // 타이머 시작 기준 엔코더 값 동기화
+                Serial.println("비입력 리셋 타이머 시작: " + String(puzzleResetTime) + "ms");
             }
             if (answerCnt >= modeValue[RANGE][ANSWER_CNT])                        // 모든 정답을 맞추었을때
             {
