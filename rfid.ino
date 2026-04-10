@@ -115,10 +115,11 @@ void CheckingPlayers(uint8_t rfidData[32])                // 어떤 카드가 �
 void StartPuzzle()
 {
   Serial.println("StartPuzzle");
-  GameTimer.deleteTimer(gameTimerId); // 타이머는 첫 정답 후 Game_system.ino에서 시작
   puzzleMode = true;                  // WiFi 수신 시 엔코더 노이즈 차단 모드 ON
   answerCnt = 0;
   rfidLastSeenTime = millis();        // RFID 이탈 감지 기준 시각 초기화
+  GameTimer.deleteTimer(gameTimerId);
+  gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc); // 퍼즐 진입 시 비입력 리셋 타이머 시작
   ptrCurrentMode = Puzzle;                                      // ptr함수의 주소를 RFIDOuter -> Puzzle로 변환
   AllNeoOn(BLUE);                                               // puzzle 함수 진행동안 전체 네오픽셀 파란색 유지
   attachInterrupt(encoderPinA, updateEncoder, CHANGE);          // 엔코더 하드웨어 인터럽트 활성화
@@ -133,6 +134,8 @@ void ResumePuzzle()
   Serial.println("ResumePuzzle - answerCnt: " + String(answerCnt));
   puzzleMode = true;
   rfidLastSeenTime = millis();
+  GameTimer.deleteTimer(gameTimerId);
+  gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc); // 재진입 시 비입력 타이머 재시작
   ptrCurrentMode = Puzzle;
   AllNeoOn(BLUE);
   attachInterrupt(encoderPinA, updateEncoder, CHANGE);
