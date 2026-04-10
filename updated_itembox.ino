@@ -29,7 +29,7 @@ void setup()
 }
 void loop()
 {
-    if (boxMotorRunning) {
+    if (boxMotorRunning && millis() - motorStartTime >= motorMinRunTime) {
         if (boxClosing && digitalRead(BOXSWITCH_PIN) == HIGH) {  // HIGH = 닫힘 감지
             MotorStop();
             boxMotorRunning = false;

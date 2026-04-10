@@ -24,6 +24,7 @@ void BoxClose(bool force)
     ledcWrite(MOTOR_PWMA_PIN, MotorMAX_DUTY_CYCLE - 1);
     digitalWrite(MOTOR_INA1_PIN, LOW);
     digitalWrite(MOTOR_INA2_PIN, HIGH);
+    motorStartTime = millis();
     boxMotorRunning = true;
     boxClosing = true;
 }
@@ -38,6 +39,7 @@ void BoxOpen(bool force)
     ledcWrite(MOTOR_PWMA_PIN, MotorMAX_DUTY_CYCLE - 1);
     digitalWrite(MOTOR_INA1_PIN, HIGH);
     digitalWrite(MOTOR_INA2_PIN, LOW);
+    motorStartTime = millis();
     boxMotorRunning = true;
     boxClosing = false;
 }
