@@ -43,19 +43,16 @@ void Puzzle(void)
 
             if (answerCnt >= modeValue[RANGE][ANSWER_CNT])                        // 모든 정답을 맞추었을때
             {
-                Serial.println("QUIZ SUCCEED");                                                 
+                Serial.println("QUIZ SUCCEED");
                 sendCommand("wQuizSolved.en=1");                                    // Nextion으로 "해제 완료" 나레이션 출력 명령 전송
                 ledcWrite(VIBRATION_RANGE_PIN, 0);                                  // 진동모터 끄기
-                answerCnt = 0;                                                      // Puzzle의 현재정답 저장변수 초기화
-                detachInterrupt(encoderPinA);                                       // 하드웨어 인터럽트 종료 -> 엔코더 사용 막기 위해
+                answerCnt = 0;
+                detachInterrupt(encoderPinA);
                 detachInterrupt(encoderPinB);
-                BlinkTimer.deleteTimer(blinkTimerId);                               // 황색점멸 타이머 초기화 위해 종료
-                BlinkTimerStart(PN532, YELLOW);                                     // 외부 RFID 네오 황색 점멸
                 puzzleMode = false;
                 WifiTimer.deleteTimer(wifiTimerId);
                 wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);
-                ptrCurrentMode = RfidLoopOutter;                                    // ptr 메인 함수 Puzzle -> RFIDOutter로 변경: 태그하여 노브 끝내기 위해
-                ptrRfidMode = PuzzleSolved;                                         // ChekingPlayer 실행시 실행되는 ptr함수 주소가 WaitFunc -> puzzleSolved로 변경: 아박 열기위해
+                PuzzleSolved();                                                     // 추가 태그 없이 바로 아이템박스 열기
             }
         }
         else                                    // 틀렸을때
