@@ -3,16 +3,13 @@
  */
 void RfidInit()
 {
-RestartPn532:                                             // goto문 회귀 위치
   for (int i = 0; i < rfid_num; ++i)
   {
     nfc[i].begin();
-    if (!(nfc[i].getFirmwareVersion()))                   // pn532 동작 안할때
-    { 
+    if (!(nfc[i].getFirmwareVersion()))
+    {
       Serial.println("PN532 연결실패 : " + String(i));
-      AllNeoOn(RED);
-      Serial.println("pn532 INIT 재실행");
-      goto RestartPn532;                                  // pn532오류시 goto문 동작하여 RFIDinit함수 재실행
+      rfid_init_complete[i] = false;
     }
     else
     {

@@ -1,0 +1,7 @@
+secrets.h
+scripts/secrets.py
+build/
+__pycache__/
+*.elf
+ArduinoOutput/
+# update.bin · update.sig · version.txt 는 제외하지 않음 (기기가 다운로드해야 함)

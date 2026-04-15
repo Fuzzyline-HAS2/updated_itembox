@@ -70,14 +70,17 @@ void DataChanged()
             BoxOpen();
             sendCommand("page pgPlayerWin");
         }
-        else if((String)(const char*)my["device_state"] == "player_lose"){ 
+        else if((String)(const char*)my["device_state"] == "player_lose"){
             ptrCurrentMode = WaitFunc;
             ptrRfidMode = WaitFunc;
             AllNeoOn(RED);
             BoxOpen();
             sendCommand("page pgPlayerLose");
         }
-        
+        else if((String)(const char*)my["device_state"] == "github") {
+            ota.check();
+        }
+
     }
   // 퍼즐 정답 서버 수신
   const char* answerKeys[] = {"puzzle_answer_1", "puzzle_answer_2", "puzzle_answer_3"};
@@ -97,19 +100,7 @@ void DataChanged()
       puzzleResetTime = (unsigned long)serverResetSec;
       Serial.println("puzzle_reset_time 서버 수신: " + String(serverResetSec) + "ms");
   }
-
-  // brightness 서버 수신 (0~100% → 0~255)
-  int serverBrightness = my["brightness"].as<int>();
-  int prevBrightness = cur["brightness"].as<int>();
-  if (forceAnswerUpdate || serverBrightness != prevBrightness) {
-      uint8_t neoVal = (uint8_t)(serverBrightness * 255 / 100);
-      for (int i = 0; i < NeopixelNum; i++) {
-          pixels[i].setBrightness(neoVal);
-          pixels[i].show();
-      }
-      Serial.println("brightness 서버 수신: " + String(serverBrightness) + "% -> " + String(neoVal));
-  }
-
+  
   cur = my; // cur 데이터 그룹에 현재 읽어온 데이터 저장
 }
 void WaitFunc(void)
@@ -150,27 +141,6 @@ void ActivateFunc(void)
 }
 void ReadyFunc(void)
 {
-    // 이제 서버 -> 기기로 랜덤으로 배터리팩을 분배하기 때문에 주석처리 했습니다. 
-    // int nCycleCnt = 0;
-    // for(int i = HI1; i <= FI2; i++){
-    //     batteryPackRnd[i].nVal = 0;
-    //     Serial.println(batteryPackRnd[i].strDevice + ":" + (String)batteryPackRnd[i].nVal);
-    // }
-    // while(nCycleCnt < 10){
-    //     long rndDevice = random(0,10);
-    //     if(batteryPackRnd[rndDevice].nVal < 3)
-    //     {
-    //         batteryPackRnd[rndDevice].nVal++;
-    //         nCycleCnt++;
-    //     }
-    // }
-    // for(int i = HI1; i <= FI2; i++)
-    //     Serial.println(batteryPackRnd[i].strDevice + ":" + (String)batteryPackRnd[i].nVal);
-    // for(int i = HI1; i <= FI2; i++){
-    //     if(batteryPackRnd[i].nVal != 0)
-    //         has2wifi.Send(batteryPackRnd[i].strDevice, "battery_pack", (String)batteryPackRnd[i].nVal);
-    // }
-
     sendCommand("page pgWait");
     Serial.println("READY");
     AllNeoOn(RED);
