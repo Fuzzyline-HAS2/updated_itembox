@@ -9,6 +9,7 @@
  *
  */
 
+#define FIRMWARE_VER 2
 #include "updated_itembox.h"
 #include "esp_system.h"
 
@@ -17,6 +18,19 @@ void setup()
     Serial.begin(115200);
 
     has2wifi.Setup("badland_ruins", "Code3824@");
+    ota.setLogStream(Serial);
+    ota.setOnSuccess([]() {
+        for (int i = 0; i < 5; i++) {
+            AllNeoOn(RED);
+            delay(300);
+            AllNeoOn(BLACK);
+            delay(300);
+        }
+        has2wifi.Send((String)(const char*)my["device_name"], "device_state", "setting");
+    });
+    ota.setOnSkip([]() {
+        has2wifi.Send((String)(const char*)my["device_name"], "device_state", "setting");
+    });
     NeopixelInit();
     RfidInit();
     MotorInit();
