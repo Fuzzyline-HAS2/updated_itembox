@@ -41,6 +41,8 @@ struct BATTERYPACKRND
     String strDevice;
     int nVal;
 };
+
+// 이제 서버 -> 아이템박스로 배터리팩 개수를 랜덤으로 나눠주기 때문에 아래의 배열은 필요없음.
 struct BATTERYPACKRND batteryPackRnd[10] = {    {"HI1", 0},{"HI2", 0},
                                                 {"OI1", 0},{"OI2", 0},
                                                 {"BI1", 0},{"BI2", 0},

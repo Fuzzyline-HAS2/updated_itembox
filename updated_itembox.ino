@@ -17,7 +17,7 @@ void setup()
 {
     Serial.begin(115200);
 
-    has2wifi.Setup("city");
+    has2wifi.Setup("badland");
     ota.setLogStream(Serial);
     ota.setOnSuccess([]() {
         for (int i = 0; i < 5; i++) {
