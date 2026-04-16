@@ -5,7 +5,7 @@
 const int rfid_num = 2; // 설치된 pn532의 개수
 
 //****************************************WIFI****************************************************************
-HAS2_Wifi has2wifi("http://172.30.1.43");
+HAS2_Wifi has2wifi("http://172.30.1.44");
 SecureOTA ota(
     "https://raw.githubusercontent.com/Fuzzyline-HAS2/updated_itembox/main/update.bin",
     "https://raw.githubusercontent.com/Fuzzyline-HAS2/updated_itembox/main/version.txt",
@@ -82,6 +82,8 @@ void BatteryPackSend();
 void NeopixelInit();
 void EncoderNeopixelOn();
 void NeoBlink(int neo, int neoColor, int cnt, int blinkTime);
+void UpdateBrightness();
+int ledBrightness = 255;
 const int NumPixels[3] = {28,24,24};
 const int NeopixelNum = 3;
 enum {PN532 = 0, INNER, ENCODER};

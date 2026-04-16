@@ -101,6 +101,13 @@ void DataChanged()
       Serial.println("puzzle_reset_time 서버 수신: " + String(serverResetSec) + "ms");
   }
   
+  // brightness 서버 수신 및 적용
+  int serverBrightness = my["brightness"].as<int>();
+  int prevBrightness = cur["brightness"].as<int>();
+  if (forceAnswerUpdate || serverBrightness != prevBrightness) {
+      UpdateBrightness();
+  }
+
   cur = my; // cur 데이터 그룹에 현재 읽어온 데이터 저장
 }
 void WaitFunc(void)
@@ -111,6 +118,7 @@ void SettingFunc(void)
 {
     sendCommand("page pgWait");
     Serial.println("SETTING");
+    UpdateBrightness();
     AllNeoOn(WHITE);
     BoxOpen();
     encoderValue = 165;
@@ -129,6 +137,7 @@ void ActivateFunc(void)
     encoderValue = 165;
     answerCnt = 0;
     Serial.println("ACTIVATE");
+    UpdateBrightness();
     AllNeoOn(YELLOW);
     BoxClose();
     ptrCurrentMode = RfidLoopOutter;
@@ -143,6 +152,7 @@ void ReadyFunc(void)
 {
     sendCommand("page pgWait");
     Serial.println("READY");
+    UpdateBrightness();
     AllNeoOn(RED);
     BoxClose();
     ptrCurrentMode = WaitFunc;

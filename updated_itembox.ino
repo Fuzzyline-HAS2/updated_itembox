@@ -1,4 +1,4 @@
- ;/**
+/**
  * @file Done_ItemBox_code.ino
  * @author 김병준 (you@domain.com)
  * @brief
@@ -17,7 +17,7 @@ void setup()
 {
     Serial.begin(115200);
 
-    has2wifi.Setup("badland_ruins", "Code3824@");
+    has2wifi.Setup("city");
     ota.setLogStream(Serial);
     ota.setOnSuccess([]() {
         for (int i = 0; i < 5; i++) {
