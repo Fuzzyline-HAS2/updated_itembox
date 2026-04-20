@@ -1,15 +1,15 @@
 void lightColor(Adafruit_NeoPixel &neo, int c[3])
 {
-    for (int i = 0; i < neo.numPixels(); i++)
-        neo.setPixelColor(i, neo.Color(c[0], c[1], c[2]));
+    neo.fill(neo.Color(c[0], c[1], c[2]));
     neo.show();
 }
 
-void NeopixelInit() // 전체 네오픽셀 초기화 해주는 함수
+void NeopixelInit()
 {
   for (int i = 0; i < NeopixelNum; ++i)
   {
     pixels[i].begin();
+    pixels[i].setBrightness(ledBrightness);
   }
   for (int i = 0; i < NeopixelNum; ++i)
   {
@@ -48,8 +48,8 @@ void AllNeoOn(int neoColor){
 // 0이거나 100 초과값 수신 시 기본값 255 사용
 void UpdateBrightness() {
     int serverBrightness = my["brightness"].as<int>();
-    if (serverBrightness == 0 || serverBrightness > 100) {
-        ledBrightness = 255;
+    if (serverBrightness <= 0 || serverBrightness > 100) {
+        ledBrightness = DEFAULT_BRIGHTNESS;
     } else {
         ledBrightness = map(serverBrightness, 1, 100, 1, 255);
     }
@@ -57,5 +57,4 @@ void UpdateBrightness() {
         pixels[i].setBrightness(ledBrightness);
         pixels[i].show();
     }
-    Serial.println("Brightness 적용: server=" + String(serverBrightness) + " → mapped=" + String(ledBrightness));
 }

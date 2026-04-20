@@ -85,7 +85,8 @@ void NeopixelInit();
 void EncoderNeopixelOn();
 void NeoBlink(int neo, int neoColor, int cnt, int blinkTime);
 void UpdateBrightness();
-int ledBrightness = 255;
+#define DEFAULT_BRIGHTNESS 50
+int ledBrightness = DEFAULT_BRIGHTNESS;
 const int NumPixels[3] = {28,24,24};
 const int NeopixelNum = 3;
 enum {PN532 = 0, INNER, ENCODER};
