@@ -45,7 +45,7 @@ void AllNeoOn(int neoColor){
 }
 
 // 서버로부터 brightness(0~100) 수신 → 0~255 매핑 후 픽셀에 적용
-// 0이거나 100 초과값 수신 시 기본값 255 사용
+// 0 이하이거나 100 초과값 수신 시 기본값 DEFAULT_BRIGHTNESS(50) 적용
 void UpdateBrightness() {
     int serverBrightness = my["brightness"].as<int>();
     if (serverBrightness <= 0 || serverBrightness > 100) {

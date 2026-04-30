@@ -94,6 +94,50 @@ void DataChanged() {
 
 ---
 
+### 부팅 시 nullptr 크래시
+
+부팅 직후 두 가지 조건에서 장치가 크래시(재시작 루프)에 빠질 수 있다.
+
+#### 원인 1 — WiFi 연결 실패
+
+`has2wifi.Setup(theme)`에서 해당 테마의 SSID 목록을 순서대로 시도한다. 각 SSID당 약 2초(100ms × 20회) 내에 연결되지 않으면 다음 SSID로 넘어가고, 목록을 모두 소진하면 `ESP.restart()`로 자동 재시작된다.
+
+```
+badland_ruins → 실패
+badland_shoot → 실패
+...
+badland_auto  → 실패  →  ESP.restart()
+```
+
+- 재시작이 반복되면 전원 공급 문제 또는 AP 미동작 상태이므로 **라우터/AP 상태를 먼저 확인**한다.
+- `has2wifi.Setup("badland")`와 같이 테마 문자열이 오타가 나면 SSID 목록 자체를 건너뛰어 즉시 재시작 루프에 빠진다.
+
+#### 원인 2 — device_name null (서버 미등록)
+
+WiFi 연결 성공 후 `ReceiveMine()`을 호출하여 자신의 MAC 주소로 서버 DB에서 장치 정보를 받아온다. 서버에 해당 MAC이 등록되어 있지 않거나 응답이 비정상이면 `my["device_name"]`이 null이 된다.
+
+이후 코드 어디서든 `(const char*)my["device_name"]`를 역참조하면 nullptr가 되어 크래시한다.
+
+```cpp
+// 크래시 발생 지점 예시
+has2wifi.Send((String)(const char*)my["device_name"], "device_state", "setting");
+//            ↑ my["device_name"]이 null이면 nullptr → String 생성 시 크래시
+```
+
+**확인 방법**: Serial 모니터에서 부팅 로그 확인
+
+```
+DeviceName : null       ← 이 줄이 출력되면 서버 미등록 상태
+```
+
+**해결**: 서버 DB에 해당 장치의 MAC 주소와 `device_name`을 등록한다. MAC 주소는 부팅 로그에서 확인할 수 있다.
+
+```
+MY MAC=AA:BB:CC:DD:EE:FF   ← 이 값을 서버에 등록
+```
+
+---
+
 ### 색상 변경 (lightColor)
 
 모든 장치에서 동일한 시그니처를 사용한다.

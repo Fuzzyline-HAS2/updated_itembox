@@ -104,7 +104,7 @@ void DataChanged()
   // brightness 서버 수신 및 적용
   int serverBrightness = my["brightness"].as<int>();
   int prevBrightness = cur["brightness"].as<int>();
-  if (forceAnswerUpdate || serverBrightness != prevBrightness) {
+  if (serverBrightness != prevBrightness) {
       UpdateBrightness();
   }
 
