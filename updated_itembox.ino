@@ -18,6 +18,7 @@ void setup()
     Serial.begin(115200);
 
     has2wifi.Setup("badland_ruins", "Code3824@");
+    TelnetInit();
     ota.setLogStream(Serial);
     ota.setOnSuccess([]() {
         for (int i = 0; i < 5; i++) {
@@ -64,6 +65,7 @@ void loop()
             }
         }
     }
+    TelnetRun();
     ptrCurrentMode();
     WifiTimer.run();
     GameTimer.run();

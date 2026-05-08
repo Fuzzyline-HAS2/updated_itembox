@@ -2,6 +2,21 @@
 #define _DONE_ITEMBOX_CODE_
 
 #include "Library_and_pin.h"
+
+class TelnetDebugConsole : public Stream {
+public:
+  void begin(unsigned long baud);
+  int available() override;
+  int read() override;
+  int peek() override;
+  void flush() override;
+  size_t write(uint8_t data) override;
+  size_t write(const uint8_t *buffer, size_t size) override;
+};
+extern HardwareSerial HardwareDebugSerial;
+extern TelnetDebugConsole DebugSerial;
+#define Serial DebugSerial
+
 const int rfid_num = 2; // 설치된 pn532의 개수
 
 //****************************************WIFI****************************************************************
@@ -22,8 +37,8 @@ void WaitFunc(void);
 void WifiIntervalLoop(unsigned long intervalValue);
 unsigned long wifiInterval = 0;
 //****************************************Game System****************************************************************
-void (*ptrCurrentMode)();   //현재모드 저장용 포인터 함수
-void (*ptrRfidMode)();      //rfid모드 저장용 포인터 함수
+void (*ptrCurrentMode)() = WaitFunc;   //현재모드 저장용 포인터 함수
+void (*ptrRfidMode)() = WaitFunc;      //rfid모드 저장용 포인터 함수
 //****************************************Game System****************************************************************
 unsigned long puzzleStartTime = 0; 
 enum {VIBESTREGNTH = 0, ANSWER, RANGE};
