@@ -5,11 +5,11 @@
 const int rfid_num = 2; // 설치된 pn532의 개수
 
 //****************************************WIFI****************************************************************
-HAS2_Wifi has2wifi("http://172.30.1.44");
+HAS2_Wifi has2wifi("http://172.30.1.43");
 SecureOTA ota(
-    "https://raw.githubusercontent.com/Fuzzyline-HAS2/updated_itembox/main/update.bin",
-    "https://raw.githubusercontent.com/Fuzzyline-HAS2/updated_itembox/main/version.txt",
-    "https://raw.githubusercontent.com/Fuzzyline-HAS2/updated_itembox/main/update.sig",
+    "https://raw.githubusercontent.com/Fuzzyline-HAS2/updated_itembox/third_store/update.bin",
+    "https://raw.githubusercontent.com/Fuzzyline-HAS2/updated_itembox/third_store/version.txt",
+    "https://raw.githubusercontent.com/Fuzzyline-HAS2/updated_itembox/third_store/update.sig",
     HMAC_SECRET,
     FIRMWARE_VER
 );
@@ -41,13 +41,6 @@ struct BATTERYPACKRND
     String strDevice;
     int nVal;
 };
-
-// 이제 서버 -> 아이템박스로 배터리팩 개수를 랜덤으로 나눠주기 때문에 아래의 배열은 필요없음.
-struct BATTERYPACKRND batteryPackRnd[10] = {    {"HI1", 0},{"HI2", 0},
-                                                {"OI1", 0},{"OI2", 0},
-                                                {"BI1", 0},{"BI2", 0},
-                                                {"GI1", 0},{"GI2", 0},
-                                                {"FI1", 0},{"FI2", 0} };
 //****************************************SimpleTimer SETUP****************************************************************
 SimpleTimer GameTimer;
 SimpleTimer WifiTimer;
