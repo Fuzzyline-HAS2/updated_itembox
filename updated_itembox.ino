@@ -16,6 +16,7 @@
 void setup()
 {
     Serial.begin(115200);
+    Serial.println("MAC: " + WiFi.macAddress());
 
     has2wifi.Setup("badland_ruins", "Code3824@");
     TelnetInit();
