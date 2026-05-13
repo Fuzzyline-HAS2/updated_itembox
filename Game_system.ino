@@ -27,6 +27,21 @@ void Puzzle(void)
     }
 
     int currentAnswer = modeValue[ANSWER][answerCnt];   // Puzzle 함수를 진행하는 동안 현재의 정답 저장용 변수, 몇번째 문제인지 저장하는건 answerCnt 전연 변수
+
+    if (currentAnswer == -1 && (String)(const char*)my["game_state"] == "activate") {
+        Serial.println("Puzzle " + String(answerCnt + 1) + " server-solved (-1), opening box");
+        sendCommand("wQuizSolved.en=1");
+        ledcWrite(VIBRATION_RANGE_PIN, 0);
+        answerCnt = 0;
+        detachInterrupt(encoderPinA);
+        detachInterrupt(encoderPinB);
+        puzzleMode = false;
+        WifiTimer.deleteTimer(wifiTimerId);
+        wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);
+        PuzzleSolved();
+        return;
+    }
+
     EncoderNeopixelOn();                                // 현재 엔코더 위치 적색으로 표현하기 위해 네오픽셀 켜주는 함수
     EncoderVibrationStrength(currentAnswer);            // 현재 엔코더 위치에 따라 진동모터 세기 결정해주는 함수
 

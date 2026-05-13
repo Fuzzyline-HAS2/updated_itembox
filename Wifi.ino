@@ -86,7 +86,7 @@ void DataChanged()
 
     }
   // 퍼즐 정답 서버 수신
-  const char* answerKeys[] = {"puzzle_answer_1", "puzzle_answer_2", "puzzle_answer_3"};
+  const char* answerKeys[] = {"puzzle_answer_1", "puzzle_answer_2", "puzzle_answer_3", "puzzle_answer_4", "puzzle_answer_5"};
   int totalAnswers = modeValue[RANGE][ANSWER_CNT];
   for (int i = 0; i < totalAnswers; i++) {
       int serverVal = my[answerKeys[i]].as<int>();
