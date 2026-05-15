@@ -6,7 +6,7 @@ void NextionInit()
 
 void SendLanguage()
 {
-    int lang = my["language"].as<int>();
+    int lang = my["selected_language"].as<int>();
     const char* pages[] = {"pgSetting", "pgItemOpen", "pgItemTaken", "pgItemFail",
                            "pgEscapeOpen", "pgSurvivorWin", "pgSurvivorLose"};
     for (int i = 0; i < 7; i++)

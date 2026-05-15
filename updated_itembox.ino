@@ -61,7 +61,7 @@ void loop()
                     ExpSend();
                     BatteryPackSend();
                     sendCommand("page pgItemOpen");
-                    if (my["language"].as<int>() == 1)
+                    if (my["selected_language"].as<int>() == 1)
                         sendCommand("wQuizSolved.en=1");
                     else
                         sendCommand("wEQuizSolved.en=1");

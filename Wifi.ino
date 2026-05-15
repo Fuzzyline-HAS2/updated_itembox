@@ -112,7 +112,7 @@ void DataChanged()
   }
 
   // language 서버 수신 및 Nextion 전송
-  int serverLanguage = my["language"].as<int>();
+  int serverLanguage = my["selected_language"].as<int>();
   int prevLanguage = cur["language"].as<int>();
   if (serverLanguage != prevLanguage) {
       SendLanguage();
