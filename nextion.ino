@@ -6,7 +6,7 @@ void NextionInit()
 
 void SendLanguage()
 {
-    int lang = my["selected_language"].as<int>();
+    int lang = ((String)(const char*)shift_machine["selected_language"] == "EN") ? 0 : 1;
     const char* pages[] = {"pgSetting", "pgItemOpen", "pgItemTaken", "pgItemFail",
                            "pgEscapeOpen", "pgSurvivorWin", "pgSurvivorLose"};
     for (int i = 0; i < 7; i++)
