@@ -45,7 +45,6 @@ void DataChanged()
                 ExpSend();
                 BatteryPackSend();
                 sendCommand("page pgItemOpen");
-                sendCommand("wOutTagged.en=1");
                 BoxOpen();
                 lightColor(pixels[INNER], color[YELLOW]);
                 ptrCurrentMode = RfidLoopInner;

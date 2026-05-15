@@ -49,31 +49,12 @@ void ExpSend(){
     }
 }
 void BatteryPackSend(){
-    if((String)(const char*)my["battery_pack"] == "1")
-    {
-        sendCommand("pgItemOpen.picBatteryPack.pic=3");
-        sendCommand("pgItemOpen.vBatteryPack.val=1");
-    }
-    else if((String)(const char*)my["battery_pack"] == "2")
-    {
-        sendCommand("pgItemOpen.picBatteryPack.pic=4");
-        sendCommand("pgItemOpen.vBatteryPack.val=2");
-    }
-    else if((String)(const char*)my["battery_pack"] == "3")
-    {
-        sendCommand("pgItemOpen.picBatteryPack.pic=5");
-        sendCommand("pgItemOpen.vBatteryPack.val=3");
-    }
-    else if((String)(const char*)my["battery_pack"] == "4")
-    {
-        sendCommand("pgItemOpen.picBatteryPack.pic=6");
-        sendCommand("pgItemOpen.vBatteryPack.val=4");
-    }
-    else if((String)(const char*)my["battery_pack"] == "5")
-    {
-        sendCommand("pgItemOpen.picBatteryPack.pic=7");
-        sendCommand("pgItemOpen.vBatteryPack.val=5");
-    }
+    int val = String((const char*)my["battery_pack"]).toInt();
+    if (val <= 0) return;
+    bool isEN = ((String)(const char*)shift_machine["selected_language"] == "EN");
+    int pic = isEN ? (val - 1) : (val + 3);
+    sendCommand(("pgItemOpen.picBatteryPack.pic=" + String(pic)).c_str());
+    sendCommand(("pgItemOpen.vBatteryPack.val=" + String(val)).c_str());
 }
 
 // void BatteryPackSend(){
