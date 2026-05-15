@@ -61,7 +61,10 @@ void loop()
                     ExpSend();
                     BatteryPackSend();
                     sendCommand("page pgItemOpen");
-                    sendCommand("wQuizSolved.en=1");
+                    if (my["language"].as<int>() == 0)
+                        sendCommand("wQuizSolved.en=1");
+                    else
+                        sendCommand("wEQuizSolved.en=1");
                     pendingOpenScreen = false;
                 }
             }
