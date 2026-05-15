@@ -9,8 +9,10 @@ void SendLanguage()
     int lang = ((String)(const char*)shift_machine["selected_language"] == "EN") ? 0 : 1;
     const char* pages[] = {"pgSetting", "pgItemOpen", "pgItemTaken", "pgItemFail",
                            "pgEscapeOpen", "pgSurvivorWin", "pgSurvivorLose"};
-    for (int i = 0; i < 7; i++)
-        sendCommand((String(pages[i]) + ".vLanguage.val=" + String(lang)).c_str());
+    for (int i = 0; i < 7; i++) {
+        String cmd = String(pages[i]) + ".vLanguage.val=" + String(lang);
+        sendCommand(cmd.c_str());
+    }
 }
 
 void DisplayCheck()
@@ -53,8 +55,10 @@ void BatteryPackSend(){
     if (val <= 0) return;
     bool isEN = ((String)(const char*)shift_machine["selected_language"] == "EN");
     int pic = isEN ? (val - 1) : (val + 3);
-    sendCommand(("pgItemOpen.picBatteryPack.pic=" + String(pic)).c_str());
-    sendCommand(("pgItemOpen.vBatteryPack.val=" + String(val)).c_str());
+    String picCmd = "pgItemOpen.picBatteryPack.pic=" + String(pic);
+    String valCmd = "pgItemOpen.vBatteryPack.val=" + String(val);
+    sendCommand(picCmd.c_str());
+    sendCommand(valCmd.c_str());
 }
 
 // void BatteryPackSend(){
