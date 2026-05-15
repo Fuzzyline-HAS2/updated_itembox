@@ -58,9 +58,10 @@ void loop()
                 boxMotorRunning = false;
                 Serial.println("BOX Opened");
                 if (pendingOpenScreen) {
-                    sendCommand("page pgItemOpen");
                     ExpSend();
                     BatteryPackSend();
+                    sendCommand("page pgItemOpen");
+                    sendCommand("wQuizSolved.en=1");
                     pendingOpenScreen = false;
                 }
             }

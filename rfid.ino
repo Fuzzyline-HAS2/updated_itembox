@@ -169,6 +169,8 @@ void ItemTook()
   Serial.println((int)my["max_battery_pack"]);
   /* #endregion */
   if (((int)tag["battery_pack"] + (int)my["battery_pack"]) <= (int)tag["max_battery_pack"]){                                    // 태그한 플레이어의 현재 배터리팩 최대 소지 가능 개수가 >= 아이템박스에서 얻을 수 있는거 보다 많거나 같을때
+    sendCommand("wOutTagged.en=1");
+    delay(800);                                                                                                                  // 소리가 재생될 시간 확보 후 페이지 전환 (너무 짧으면 소리 잘림)
     sendCommand("page pgItemTaken");                                                                                            // Nextion에서 배터리팩 가져간 후 페이지로 변경 + 효과음은 페이지 pgItemTakenb 변경시 nextion에서 자동재생
     AllNeoOn(RED);                                                                                                              // 가져가고 나서 USED일땐 전체 빨간색
     has2wifi.Send((String)(const char *)my["device_name"], "device_state", "used");                                             // 아박 device_state = used 처리
@@ -181,12 +183,15 @@ void ItemTook()
     ptrCurrentMode = WaitFunc;                                                                                                  // ptr 함수의 실행이 null로 변환
     ptrRfidMode = WaitFunc;                                                                                                     // ptr 함수의 실행이 null로 변환
   }
-  else                                                  // 태그한 플레이어가 더이상 배터리팩을 소지할 수 없을 때 실행 
+  else                                                  // 태그한 플레이어가 더이상 배터리팩을 소지할 수 없을 때 실행
   {
-    Serial.println("NOT ENOUGH IOT BatteryPack");       //
-    sendCommand("page pgItemTakeFail");                 // Nextion에서 더이상 소지할수 없다는 안내창과 효과음 출력을 위해 serial 전송
-    NeoBlink(INNER, RED, 4, 250);                       // 내부 네오픽셀 4번 0.25s 간격으로 적색 점멸 -> Delay사용으로 이 함수에 2초 머물러 있음
-    BlinkTimer.deleteTimer(blinkTimerId);               // 내부 네오픽셀 황색 점멸 타이머 초기화를 위해 종료
-    BlinkTimerStart(INNER, YELLOW);                     // 내부 네오픽셀 황색 점멸 타이머 시작
+    Serial.println("NOT ENOUGH IOT BatteryPack");
+    BlinkTimer.deleteTimer(blinkTimerId);               // 황색 점멸 먼저 정지
+    sendCommand("page pgItemFail");
+    NeoBlink(INNER, RED, 2, 250);                       // 내부 네오픽셀 적색 점멸 1초 후 pgItemOpen 복귀
+    ExpSend();
+    BatteryPackSend();
+    sendCommand("page pgItemOpen");
+    BlinkTimerStart(INNER, YELLOW);                     // 내부 네오픽셀 황색 점멸 재시작
   }
 }

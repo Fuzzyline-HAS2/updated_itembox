@@ -42,10 +42,10 @@ void DataChanged()
                 Serial.println("PuzzleSolved");
                 AllNeoOn(BLUE);
                 delay(2000);
-                sendCommand("page pgItemOpen");
-                sendCommand("wOutTagged.en=1");
                 ExpSend();
                 BatteryPackSend();
+                sendCommand("page pgItemOpen");
+                sendCommand("wOutTagged.en=1");
                 BoxOpen();
                 lightColor(pixels[INNER], color[YELLOW]);
                 ptrCurrentMode = RfidLoopInner;
@@ -71,14 +71,14 @@ void DataChanged()
             ptrRfidMode = WaitFunc;
             AllNeoOn(BLUE);
             BoxOpen();
-            sendCommand("page pgPlayerWin");
+            sendCommand("page pgSurvivorWin");
         }
         else if((String)(const char*)my["device_state"] == "player_lose"){
             ptrCurrentMode = WaitFunc;
             ptrRfidMode = WaitFunc;
             AllNeoOn(RED);
             BoxOpen();
-            sendCommand("page pgPlayerLose");
+            sendCommand("page pgSurvivorLose");
         }
         else if((String)(const char*)my["device_state"] == "github") {
             ota.check();
@@ -111,6 +111,13 @@ void DataChanged()
       UpdateBrightness();
   }
 
+  // language 서버 수신 및 Nextion 전송
+  int serverLanguage = my["language"].as<int>();
+  int prevLanguage = cur["language"].as<int>();
+  if (serverLanguage != prevLanguage) {
+      SendLanguage();
+  }
+
   cur = my; // cur 데이터 그룹에 현재 읽어온 데이터 저장
 }
 void WaitFunc(void)
@@ -119,7 +126,8 @@ void WaitFunc(void)
 }
 void SettingFunc(void)
 {
-    sendCommand("page pgWait");
+    sendCommand("page pgSetting");
+    SendLanguage();
     Serial.println("SETTING");
     UpdateBrightness();
     AllNeoOn(WHITE);
@@ -136,7 +144,7 @@ void SettingFunc(void)
 }
 void ActivateFunc(void)
 {
-    sendCommand("page pgWait");
+    sendCommand("page pgSetting");
     encoderValue = 165;
     answerCnt = 0;
     Serial.println("ACTIVATE");
@@ -153,7 +161,7 @@ void ActivateFunc(void)
 }
 void ReadyFunc(void)
 {
-    sendCommand("page pgWait");
+    sendCommand("page pgSetting");
     Serial.println("READY");
     UpdateBrightness();
     AllNeoOn(RED);
