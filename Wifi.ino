@@ -43,6 +43,7 @@ void DataChanged()
                 AllNeoOn(BLUE);
                 delay(2000);
                 sendCommand("page pgItemOpen");
+                SendLanguage();
                 ExpSend();
                 BatteryPackSend();
                 BoxOpen();

@@ -59,6 +59,7 @@ void loop()
                 Serial.println("BOX Opened");
                 if (pendingOpenScreen) {
                     sendCommand("page pgItemOpen");
+                    SendLanguage();
                     ExpSend();
                     BatteryPackSend();
                     if ((String)(const char*)shift_machine["selected_language"] != "EN")
