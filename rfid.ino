@@ -187,7 +187,7 @@ void ItemTook()
     Serial.println("NOT ENOUGH IOT BatteryPack");
     BlinkTimer.deleteTimer(blinkTimerId);               // 황색 점멸 먼저 정지
     sendCommand("page pgItemFail");
-    NeoBlink(INNER, RED, 2, 250);                       // 내부 네오픽셀 적색 점멸 1초 후 pgItemOpen 복귀
+    NeoBlink(INNER, RED, 4, 250);                       // 내부 네오픽셀 적색 점멸 2초 후 pgItemOpen 복귀
     BatteryPackSend();
     sendCommand("page pgItemOpen");
     SendLanguage();
