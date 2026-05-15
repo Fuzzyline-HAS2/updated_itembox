@@ -58,9 +58,9 @@ void loop()
                 boxMotorRunning = false;
                 Serial.println("BOX Opened");
                 if (pendingOpenScreen) {
+                    sendCommand("page pgItemOpen");
                     ExpSend();
                     BatteryPackSend();
-                    sendCommand("page pgItemOpen");
                     if ((String)(const char*)shift_machine["selected_language"] != "EN")
                         sendCommand("wQuizSolved.en=1");
                     else
