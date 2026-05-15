@@ -188,10 +188,10 @@ void ItemTook()
     BlinkTimer.deleteTimer(blinkTimerId);               // 황색 점멸 먼저 정지
     sendCommand("page pgItemFail");
     NeoBlink(INNER, RED, 2, 250);                       // 내부 네오픽셀 적색 점멸 1초 후 pgItemOpen 복귀
+    BatteryPackSend();
     sendCommand("page pgItemOpen");
     SendLanguage();
     ExpSend();
-    BatteryPackSend();
     BlinkTimerStart(INNER, YELLOW);                     // 내부 네오픽셀 황색 점멸 재시작
   }
 }

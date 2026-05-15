@@ -42,10 +42,10 @@ void DataChanged()
                 Serial.println("PuzzleSolved");
                 AllNeoOn(BLUE);
                 delay(2000);
+                BatteryPackSend();
                 sendCommand("page pgItemOpen");
                 SendLanguage();
                 ExpSend();
-                BatteryPackSend();
                 BoxOpen();
                 lightColor(pixels[INNER], color[YELLOW]);
                 ptrCurrentMode = RfidLoopInner;
