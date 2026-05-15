@@ -54,7 +54,7 @@ void BatteryPackSend(){
     int val = String((const char*)my["battery_pack"]).toInt();
     if (val <= 0) return;
     bool isEN = ((String)(const char*)shift_machine["selected_language"] == "EN");
-    int pic = isEN ? (val - 1) : (val + 3);
+    int pic = isEN ? (val + 3) : (val - 1);
     String picCmd = "pgItemOpen.picBatteryPack.pic=" + String(pic);
     String valCmd = "pgItemOpen.vBatteryPack.val=" + String(val);
     sendCommand(picCmd.c_str());
