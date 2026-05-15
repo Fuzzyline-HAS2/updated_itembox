@@ -145,6 +145,7 @@ void SettingFunc(void)
 void ActivateFunc(void)
 {
     sendCommand("page pgSetting");
+    SendLanguage();
     encoderValue = 165;
     answerCnt = 0;
     Serial.println("ACTIVATE");
@@ -162,6 +163,7 @@ void ActivateFunc(void)
 void ReadyFunc(void)
 {
     sendCommand("page pgSetting");
+    SendLanguage();
     Serial.println("READY");
     UpdateBrightness();
     AllNeoOn(RED);

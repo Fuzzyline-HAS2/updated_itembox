@@ -7,7 +7,10 @@ void NextionInit()
 void SendLanguage()
 {
     int lang = my["language"].as<int>();
-    sendCommand(("pgSetting.vLanguage.val=" + String(lang)).c_str());
+    const char* pages[] = {"pgSetting", "pgItemOpen", "pgItemTaken", "pgItemFail",
+                           "pgEscapeOpen", "pgSurvivorWin", "pgSurvivorLose"};
+    for (int i = 0; i < 7; i++)
+        sendCommand((String(pages[i]) + ".vLanguage.val=" + String(lang)).c_str());
 }
 
 void DisplayCheck()
