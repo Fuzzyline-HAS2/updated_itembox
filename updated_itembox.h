@@ -1,4 +1,4 @@
-#ifndef _DONE_ITEMBOX_CODE_
+﻿#ifndef _DONE_ITEMBOX_CODE_
 #define _DONE_ITEMBOX_CODE_
 
 #include "Library_and_pin.h"
@@ -20,7 +20,7 @@ extern TelnetDebugConsole DebugSerial;
 const int rfid_num = 2; // 설치된 pn532의 개수
 
 //****************************************WIFI****************************************************************
-HAS2_Wifi has2wifi("http://172.30.1.43");
+HAS2_Wifi has2wifi("http://172.30.1.1");
 SecureOTA ota(
     "https://raw.githubusercontent.com/Fuzzyline-HAS2/updated_itembox/third_store/update.bin",
     "https://raw.githubusercontent.com/Fuzzyline-HAS2/updated_itembox/third_store/version.txt",
