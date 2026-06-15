@@ -43,7 +43,7 @@ void (*ptrRfidMode)() = WaitFunc;      //rfid모드 저장용 포인터 함수
 unsigned long puzzleStartTime = 0; 
 enum {VIBESTREGNTH = 0, ANSWER, RANGE};
 enum {ANSWER_CNT = 0, ANSWER_RANGE, VIBRATION_RANGE};
-int modeValue[3][5] = { {200,150,100,50,0},     // VIBESTREGNTH (모터 세기): 0~255 설정 가능
+int modeValue[3][5] = { {120,90,70,50,0},        // VIBESTREGNTH (모터 세기): 0~255 설정 가능
                          {13,43,21,0,0},        // ANSWER (Puzzle정답) 0 ~ 95 설정가능
                          {5,2,5,0,0}};          // RANGE {ANSWER_CNT, ANSWER_RANGE, VIBRATION_RANGE } -> 정답개수, 정답핀 범위, 진동 범위
 
@@ -98,7 +98,7 @@ void UpdateBrightness();
 int ledBrightness = DEFAULT_BRIGHTNESS;
 const int NumPixels[3] = {28,24,24};
 const int NeopixelNum = 3;
-enum {PN532 = 0, INNER, ENCODER};
+enum {PN532 = 0, ENCODER, INNER};
 enum {WHITE = 0, RED, YELLOW, GREEN, BLUE, PURPLE, BLACK, BLUE0, BLUE1, BLUE2, BLUE3};
 // Neopixel 색상정보
 int color[11][3] = {{255, 255, 255}, //WHITE

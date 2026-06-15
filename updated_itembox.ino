@@ -17,7 +17,7 @@ void setup()
 {
     Serial.begin(115200);
 
-    has2wifi.Setup("badland_shoot", "Code3824@");
+    has2wifi.Setup("badland_auto", "Code3824@");
     TelnetInit();
     Serial.println("MAC: " + WiFi.macAddress());
     ota.setLogStream(Serial);
