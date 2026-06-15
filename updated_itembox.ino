@@ -9,7 +9,7 @@
  *
  */
 
-#define FIRMWARE_VER 2
+#define FIRMWARE_VER 3
 #include "updated_itembox.h"
 #include "esp_system.h"
 
@@ -17,7 +17,7 @@ void setup()
 {
     Serial.begin(115200);
 
-    has2wifi.Setup("badland_ruins", "Code3824@");
+    has2wifi.Setup("badland_auto", "Code3824@");
     TelnetInit();
     Serial.println("MAC: " + WiFi.macAddress());
     ota.setLogStream(Serial);
