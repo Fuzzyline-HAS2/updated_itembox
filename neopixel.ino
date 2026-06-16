@@ -1,7 +1,16 @@
+void showNeoStable(Adafruit_NeoPixel &neo)
+{
+    neo.show();
+    if (&neo == &pixels[INNER]) {
+        delayMicroseconds(400);
+        neo.show();
+    }
+}
+
 void lightColor(Adafruit_NeoPixel &neo, int c[3])
 {
     neo.fill(neo.Color(c[0], c[1], c[2]));
-    neo.show();
+    showNeoStable(neo);
 }
 
 void NeopixelInit()
@@ -55,6 +64,6 @@ void UpdateBrightness() {
     }
     for (int i = 0; i < NeopixelNum; i++) {
         pixels[i].setBrightness(ledBrightness);
-        pixels[i].show();
+        showNeoStable(pixels[i]);
     }
 }

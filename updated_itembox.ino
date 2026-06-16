@@ -17,7 +17,7 @@ void setup()
 {
     Serial.begin(115200);
 
-    has2wifi.Setup("badland_auto", "Code3824@");
+    has2wifi.Setup("badland");
     TelnetInit();
     Serial.println("MAC: " + WiFi.macAddress());
     ota.setLogStream(Serial);
@@ -39,8 +39,6 @@ void setup()
     EncoderInit();
     NextionInit();
     TimerInit();
-    // has2wifi.Setup();
-    // has2wifi.Setup("KT_GiGA_6C64","ed46zx1198");
     DataChanged();
 }
 void loop()
