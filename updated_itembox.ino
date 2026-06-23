@@ -9,7 +9,7 @@
  *
  */
 
-#define FIRMWARE_VER 6
+#define FIRMWARE_VER 7
 #include "updated_itembox.h"
 #include "esp_system.h"
 
@@ -17,8 +17,10 @@ void setup()
 {
     Serial.begin(115200);
 
-    has2wifi.Setup("badland");
+    // has2wifi.Setup("badland");
+    has2wifi.Setup("badland_ruins","Code3824@");
     TelnetInit();
+    BleAdvertiserInit();
     Serial.println("MAC: " + WiFi.macAddress());
     ota.setLogStream(Serial);
     ota.setOnSuccess([]() {
@@ -70,6 +72,7 @@ void loop()
         }
     }
     TelnetRun();
+    BleAdvertiserMaintain();
     ptrCurrentMode();
     WifiTimer.run();
     GameTimer.run();
