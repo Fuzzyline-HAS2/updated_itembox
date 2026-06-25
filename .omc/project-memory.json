@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1782213869510,
+  "lastScanned": 1782352635094,
   "projectRoot": "C:\\Users\\teamh\\OneDrive\\바탕 화면\\updated_itembox",
   "techStack": {
     "languages": [],
@@ -9,7 +9,7 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cd \"/c/Users/teamh/OneDrive/바탕 화면/CODE/updated_IoTglove\"\necho \"=== ttgo build output ===\"; ls -la .pio/build/ttgo-t8-v171/ | grep -E \"\\.bin$|\\.elf$\"\necho \"=== beetle build output ===\"; ls -la .pio/build/beetle-c3-location/ | grep -E \"\\.bin$\"\necho \"=== esptool available locally? ===\"; (esptool.py version 2>/dev/null || esptool version 2>/dev/null || python -c \"import esptool; print('esptool py module', esptool.__version__)\" 2>/dev/null || echo \"no local esptool\")\necho \"=== serial ports (COM) ===\"; python -c \"import serial.tools.list_ports as p; [print(x.device, x.description) for x in p.comports()]\" 2>/dev/null || echo \"(pyserial not available)\"",
+    "buildCommand": null,
     "testCommand": null,
     "lintCommand": null,
     "devCommand": null,
@@ -38,7 +38,7 @@
       "path": "ArduinoOutput",
       "purpose": null,
       "fileCount": 9,
-      "lastAccessed": 1782213869492,
+      "lastAccessed": 1782352635068,
       "keyFiles": [
         "build.options.json",
         "build_opt.h",
@@ -47,121 +47,26 @@
         "itembox_random_add.ino.bootloader.bin"
       ]
     },
+    "build": {
+      "path": "build",
+      "purpose": "Build output",
+      "fileCount": 0,
+      "lastAccessed": 1782352635069,
+      "keyFiles": []
+    },
     "scripts": {
       "path": "scripts",
       "purpose": "Build/utility scripts",
-      "fileCount": 3,
-      "lastAccessed": 1782213869493,
+      "fileCount": 4,
+      "lastAccessed": 1782352635069,
       "keyFiles": [
         "deploy.py",
+        "secrets.py",
         "secrets.py.example",
         "sign_firmware.py"
       ]
     }
   },
-  "hotPaths": [
-    {
-      "path": "updated_itembox.ino",
-      "accessCount": 7,
-      "lastAccessed": 1782242321834,
-      "type": "file"
-    },
-    {
-      "path": "Wifi.ino",
-      "accessCount": 7,
-      "lastAccessed": 1782242756030,
-      "type": "file"
-    },
-    {
-      "path": "updated_itembox.h",
-      "accessCount": 6,
-      "lastAccessed": 1782242320971,
-      "type": "file"
-    },
-    {
-      "path": "",
-      "accessCount": 4,
-      "lastAccessed": 1782239289649,
-      "type": "directory"
-    },
-    {
-      "path": "Library_and_pin.h",
-      "accessCount": 4,
-      "lastAccessed": 1782239539262,
-      "type": "file"
-    },
-    {
-      "path": "ble_advertiser.ino",
-      "accessCount": 3,
-      "lastAccessed": 1782239536919,
-      "type": "file"
-    },
-    {
-      "path": "scripts\\deploy.py",
-      "accessCount": 3,
-      "lastAccessed": 1782242322347,
-      "type": "file"
-    },
-    {
-      "path": "timer.ino",
-      "accessCount": 3,
-      "lastAccessed": 1782242758915,
-      "type": "file"
-    },
-    {
-      "path": "location_protocol.h",
-      "accessCount": 2,
-      "lastAccessed": 1782239537369,
-      "type": "file"
-    },
-    {
-      "path": "motor.ino",
-      "accessCount": 2,
-      "lastAccessed": 1782242757459,
-      "type": "file"
-    },
-    {
-      "path": "rfid.ino",
-      "accessCount": 2,
-      "lastAccessed": 1782242760061,
-      "type": "file"
-    },
-    {
-      "path": "scripts\\sign_firmware.py",
-      "accessCount": 1,
-      "lastAccessed": 1782214552751,
-      "type": "file"
-    },
-    {
-      "path": "MANUAL.md",
-      "accessCount": 1,
-      "lastAccessed": 1782214553320,
-      "type": "file"
-    },
-    {
-      "path": "README.md",
-      "accessCount": 1,
-      "lastAccessed": 1782214565683,
-      "type": "file"
-    },
-    {
-      "path": "scripts\\secrets.py.example",
-      "accessCount": 1,
-      "lastAccessed": 1782214679537,
-      "type": "file"
-    },
-    {
-      "path": "secrets.h",
-      "accessCount": 1,
-      "lastAccessed": 1782214684721,
-      "type": "file"
-    },
-    {
-      "path": "scripts\\secrets.py",
-      "accessCount": 1,
-      "lastAccessed": 1782214689792,
-      "type": "file"
-    }
-  ],
+  "hotPaths": [],
   "userDirectives": []
 }

@@ -7,7 +7,9 @@
       "Bash(git merge *)",
       "Bash(git reset *)",
       "Bash(git rev-list *)",
-      "Bash(git -C \"C:/Users/teamh/OneDrive/바탕 화면/updated_itembox\" show HEAD:updated_itembox.ino)"
+      "Bash(git -C \"C:/Users/teamh/OneDrive/바탕 화면/updated_itembox\" show HEAD:updated_itembox.ino)",
+      "PowerShell(git check-ignore *)",
+      "PowerShell(git *)"
     ]
   }
 }
