@@ -110,9 +110,10 @@ void CheckingPlayers(uint8_t rfidData[32])                // 어떤 카드가 �
 void StartPuzzle()
 {
   Serial.println("StartPuzzle");
-  puzzleMode = true;                  // WiFi 수신 시 엔코더 노이즈 차단 모드 ON
+  puzzleMode = true;
   answerCnt = 0;
   rfidLastSeenTime = millis();        // RFID 이탈 감지 기준 시각 초기화
+  WifiTimer.deleteTimer(wifiTimerId); // 퍼즐 중 WiFi 통신 완전 차단
   GameTimer.deleteTimer(gameTimerId);
   gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc); // 퍼즐 진입 시 비입력 리셋 타이머 시작
   ptrCurrentMode = Puzzle;                                      // ptr함수의 주소를 RFIDOuter -> Puzzle로 변환
@@ -129,6 +130,7 @@ void ResumePuzzle()
   Serial.println("ResumePuzzle - answerCnt: " + String(answerCnt));
   puzzleMode = true;
   rfidLastSeenTime = millis();
+  WifiTimer.deleteTimer(wifiTimerId); // 퍼즐 중 WiFi 통신 완전 차단
   GameTimer.deleteTimer(gameTimerId);
   gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc); // 재진입 시 비입력 타이머 재시작
   ptrCurrentMode = Puzzle;

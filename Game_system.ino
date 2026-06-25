@@ -21,6 +21,8 @@ void Puzzle(void)
         AllNeoOn(YELLOW);
         detachInterrupt(encoderPinA);
         detachInterrupt(encoderPinB);
+        WifiTimer.deleteTimer(wifiTimerId);
+        wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc); // 퍼즐 일시정지 시 WiFi 재개
         ptrCurrentMode = RfidLoopOutter;
         ptrRfidMode = ResumePuzzle;
         return;
