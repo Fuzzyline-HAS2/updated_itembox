@@ -169,7 +169,7 @@ void ItemTook()
     sendCommand("wOutTagged.en=1");
     delay(800);                                                                                                                  // 소리가 재생될 시간 확보 후 페이지 전환 (너무 짧으면 소리 잘림)
     sendCommand("page pgItemTaken");                                                                                            // Nextion에서 배터리팩 가져간 후 페이지로 변경 + 효과음은 페이지 pgItemTakenb 변경시 nextion에서 자동재생
-    AllNeoOn(RED);                                                                                                              // 가져가고 나서 USED일땐 전체 빨간색
+    AllNeoOn(BLUE);                                                                                                             // 가져가고 나서 USED일땐 전체 파란색
     has2wifi.Send((String)(const char *)my["device_name"], "device_state", "used");                                             // 아박 device_state = used 처리
     has2wifi.Send((String)(const char *)tag["device_name"], "battery_pack", ("+" + (String)(const char *)my["battery_pack"]));  // 태그한 플레이어 배터리팩 개수 추가
     has2wifi.Send((String)(const char *)tag["device_name"], "exp", ("+" + (String)(const char *)my["exp_pack"]));               // 태그한 플레이어 경험치 추가

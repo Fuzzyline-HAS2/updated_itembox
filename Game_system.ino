@@ -54,6 +54,8 @@ void Puzzle(void)
             Serial.println("Correct Answer");
             rfidLastSeenTime = millis();        // NeoBlink(2.5초 블로킹) 전 타임스탬프 갱신 - 오탐 방지
             NeoBlink(ENCODER, GREEN, 5, 250);   // 엔코더 네오픽셀 적색 0.25s 간격으로 5번 점멸 -> Delay사용으로 이 함수에 2초 머물러 있음
+            encoderValue = currentEncoderValue; // 블링크 후 엔코더 값 즉시 복원
+            EncoderNeopixelOn();                // 복원된 값으로 즉시 퍼즐 표시 (WiFi 지연 전에 초록색 → 퍼즐 상태 복귀)
             answerCnt++;                        // 정답시 다음 문제로 넘어가기 위해 카운트 +1
 
             bool nextIsTerminator = (answerCnt < modeValue[RANGE][ANSWER_CNT]) && (modeValue[ANSWER][answerCnt] == -1);
