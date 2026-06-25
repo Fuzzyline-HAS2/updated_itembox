@@ -38,8 +38,6 @@ void Puzzle(void)
         detachInterrupt(encoderPinA);
         detachInterrupt(encoderPinB);
         puzzleMode = false;
-        WifiTimer.deleteTimer(wifiTimerId);
-        wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);
         PuzzleSolved();
         return;
     }
@@ -70,8 +68,6 @@ void Puzzle(void)
                 detachInterrupt(encoderPinA);
                 detachInterrupt(encoderPinB);
                 puzzleMode = false;
-                WifiTimer.deleteTimer(wifiTimerId);
-                wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);
                 PuzzleSolved();                                                     // 추가 태그 없이 바로 아이템박스 열기
             }
         }

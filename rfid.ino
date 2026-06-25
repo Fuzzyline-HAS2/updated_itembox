@@ -181,6 +181,7 @@ void ItemTook()
     itemBoxUsed = true;                                                                                                         // used 명령 들어와도 재실행 되지 않게 제한하는 bool 변수
     ptrCurrentMode = WaitFunc;                                                                                                  // ptr 함수의 실행이 null로 변환
     ptrRfidMode = WaitFunc;                                                                                                     // ptr 함수의 실행이 null로 변환
+    wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);                                                            // 아이템 획득 완료 후 WiFi 타이머 재개
   }
   else                                                  // 태그한 플레이어가 더이상 배터리팩을 소지할 수 없을 때 실행
   {
