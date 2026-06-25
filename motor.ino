@@ -46,7 +46,6 @@ void BoxOpen()
 
 void MotorStop()
 {
-    Serial.println("모터 스탑");
     digitalWrite(MOTOR_INA1_PIN, LOW);
     digitalWrite(MOTOR_INA2_PIN, LOW);
     // ledcWrite(0) 제거 — LEDC 채널 연결 유지 (0으로 쓰면 채널이 분리됨)

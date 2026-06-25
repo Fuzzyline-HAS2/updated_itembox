@@ -35,7 +35,6 @@ void GameTimerFunc(){
 }
 
 void BlinkTimerFunc(){
-    Serial.println("Blink!");
     if(blinkOn == true){
         lightColor(pixels[blinkNeo], color[blinkColor]);
         blinkOn = false;

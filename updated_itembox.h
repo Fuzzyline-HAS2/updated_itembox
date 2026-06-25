@@ -2,6 +2,7 @@
 #define _DONE_ITEMBOX_CODE_
 
 #include "Library_and_pin.h"
+#include "location_protocol.h"
 
 class TelnetDebugConsole : public Stream {
 public:
@@ -29,6 +30,11 @@ SecureOTA ota(
     FIRMWARE_VER
 );
 void DataChanged();
+//****************************************BLE Advertiser****************************************************************
+void BleAdvertiserInit();
+void BleAdvertiserUpdateFromDeviceName(const char *device_name);
+void BleAdvertiserMaintain();
+void LogMemoryStats(const char *stage);
 void SettingFunc(void);
 void ActivateFunc(void);
 void ReadyFunc(void);

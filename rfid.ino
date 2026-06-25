@@ -39,7 +39,6 @@ void RfidLoopInner()
     {                                                                         // rfid에 tag 찍혔는지 확인용 //데이터 들어오면 uid정보 가져오기
       if (nfc[INPN532].ntag2xx_ReadPage(7, data))
       {                                                                       // ntag 데이터에 접근해서 불러와서 data행열에 저장
-        Serial.println("TAGGGED");
         CheckingPlayers(data);
       }
     }
@@ -67,7 +66,6 @@ void RfidLoopOutter()
     {                                                                         // rfid에 tag 찍혔는지 확인용 //데이터 들어오면 uid정보 가져오기
       if (nfc[OUTPN532].ntag2xx_ReadPage(7, data))
       {                                                                       // ntag 데이터에 접근해서 불러와서 data행열에 저장
-        Serial.println("TAGGGED");
         CheckingPlayers(data);
       }
     }

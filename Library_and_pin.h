@@ -10,6 +10,7 @@
 #include <HAS2_Wifi.h>
 #include <SimpleTimer.h>
 #include <SecureOTA.h>
+#include <esp_bt.h>
 #include "secrets.h"
 
 #define NEXTIONHWSERIAL_RX_PIN 39
