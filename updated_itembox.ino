@@ -9,7 +9,7 @@
  *
  */
 
-#define FIRMWARE_VER 9
+#define FIRMWARE_VER 10
 #include "updated_itembox.h"
 #include "esp_system.h"
 
