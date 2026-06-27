@@ -1,26 +1,46 @@
 import sys
 import os
+import glob
 
 sys.stdout.reconfigure(encoding='utf-8')
 
 _base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_home = os.path.expanduser("~")
 
-# SecureOTA 라이브러리에서 deploy_core 탐색
-# (Arduino 표준 설치 경로 → 형제 폴더 순으로 시도)
-_search_paths = [
-    os.path.join(os.path.expanduser("~"), "Documents", "Arduino", "libraries", "SecureOTA", "scripts"),
-    os.path.join(os.path.expanduser("~"), "Arduino", "libraries", "SecureOTA", "scripts"),
-    os.path.join(_base_dir, "..", "SecureOTA", "scripts"),  # 형제 폴더 (개발 환경)
+# SecureOTA 라이브러리(= deploy_core.py 보유)를 탐색한다.
+# 환경마다 (1) Arduino 스케치북 위치(OneDrive 리다이렉트 / 한국어 '문서' 포함),
+# (2) 라이브러리 폴더명(SecureOTA / SecureOTA-main 등 zip 압축 해제명),
+# (3) 개발용 형제 폴더(CODE 하위 등)가 달라 고정 경로로는 못 찾으므로
+# 후보 루트 + glob('SecureOTA*') 로 폭넓게 탐색한다.
+_lib_roots = [
+    os.path.join(_home, "Documents", "Arduino", "libraries"),
+    os.path.join(_home, "OneDrive", "Documents", "Arduino", "libraries"),
+    os.path.join(_home, "OneDrive", "문서", "Arduino", "libraries"),
+    os.path.join(_home, "Arduino", "libraries"),
+    # 개발 환경: 장치 repo 와 형제(또는 CODE 하위)로 둔 경우
+    os.path.join(_base_dir, ".."),
+    os.path.join(_base_dir, "..", "CODE"),
+    os.path.join(_base_dir, "..", ".."),
+    os.path.join(_base_dir, "..", "..", "CODE"),
 ]
 
-for _path in _search_paths:
-    if os.path.exists(os.path.join(_path, "deploy_core.py")):
-        sys.path.insert(0, _path)
-        break
-else:
-    print("❌ SecureOTA 라이브러리를 찾을 수 없습니다.")
-    print("   Arduino IDE 에서 SecureOTA 라이브러리를 설치하세요.")
+
+def _find_scripts_dir():
+    for _root in _lib_roots:
+        if not os.path.isdir(_root):
+            continue
+        for _core in glob.glob(os.path.join(_root, "SecureOTA*", "scripts", "deploy_core.py")):
+            return os.path.dirname(_core)
+    return None
+
+
+_scripts_dir = _find_scripts_dir()
+if _scripts_dir is None:
+    print("❌ SecureOTA 라이브러리(deploy_core.py)를 찾을 수 없습니다.")
+    print("   최신 SecureOTA 를 Arduino libraries 에 설치/갱신하세요:")
+    print("   https://github.com/Fuzzyline-HAS2/SecureOTA.git")
     sys.exit(1)
 
+sys.path.insert(0, _scripts_dir)
 from deploy_core import run_deploy
 run_deploy(_base_dir)
