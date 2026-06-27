@@ -9,8 +9,8 @@
  *
  */
 
-#define FIRMWARE_VER 14
-#define PARTITION_VER 4
+#define FIRMWARE_VER 15
+#define PARTITION_VER 5
 #include "updated_itembox.h"
 #include "esp_system.h"
 
@@ -80,6 +80,22 @@ void loop()
                     // 내부 태그가 먼저 처리돼 used가 됐다면 open으로 덮어쓰지 않도록 가드.
                     if (!itemBoxUsed)
                         has2wifi.Send((String)(const char*)my["device_name"], "device_state", "open");
+                    // 모터 정지 + 안정화 + open 보고까지 끝난 뒤에야 내부 태그 처리 활성화.
+                    // (PuzzleSolved에서 WaitFunc로 막아둔 것을 여기서 RfidLoopInner로 전환)
+                    if (!itemBoxUsed) {
+                        ptrCurrentMode = RfidLoopInner;
+                        ptrRfidMode = ItemTook;
+                    }
+                }
+                // 서버 open 경로: 모터 정지 후 전원 안정화 대기 → 내부 태그 활성화.
+                // (Wifi.ino에서 WaitFunc로 막아둔 것을 여기서 RfidLoopInner로 전환, 이후 ItemTook WiFi 송신이 모터 전류와 겹치지 않음)
+                if (pendingInnerEnable) {
+                    delay(motorSettleDelay);
+                    pendingInnerEnable = false;
+                    if (!itemBoxUsed) {
+                        ptrCurrentMode = RfidLoopInner;
+                        ptrRfidMode = ItemTook;
+                    }
                 }
             }
         }
