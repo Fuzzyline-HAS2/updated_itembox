@@ -9,8 +9,8 @@
  *
  */
 
-#define FIRMWARE_VER 13
-#define PARTITION_VER 3
+#define FIRMWARE_VER 14
+#define PARTITION_VER 4
 #include "updated_itembox.h"
 #include "esp_system.h"
 
@@ -20,6 +20,7 @@ void setup()
 
     has2wifi.Setup("badland");
     // has2wifi.Setup("badland_ruins","Code3824@");
+    has2wifi.Send((String)(const char*)my["device_name"], "esp_version", String(FIRMWARE_VER)); // 부팅 시 현재 펌웨어 버전을 서버 device.esp_version에 보고 (OTA 재부팅 후에도 자동 갱신)
     TelnetInit();
     BleAdvertiserInit();
     Serial.println("MAC: " + WiFi.macAddress());
@@ -65,6 +66,7 @@ void loop()
                 boxMotorRunning = false;
                 Serial.println("BOX Opened");
                 if (pendingOpenScreen) {
+                    delay(motorSettleDelay);  // 모터 정지 후 전원 레일 안정화 대기 → 이어지는 WiFi 송신 전류가 모터 전류와 겹치지 않게 (brownout 방지)
                     BatteryPackSend();
                     sendCommand("page pgItemOpen");
                     SendLanguage();
@@ -74,6 +76,10 @@ void loop()
                     else
                         sendCommand("wEQuizSolved.en=1");
                     pendingOpenScreen = false;
+                    // 화면 전환을 끝낸 뒤 서버 보고. 모터 정지·안정화 이후라 WiFi 전류 피크가 모터와 겹치지 않음.
+                    // 내부 태그가 먼저 처리돼 used가 됐다면 open으로 덮어쓰지 않도록 가드.
+                    if (!itemBoxUsed)
+                        has2wifi.Send((String)(const char*)my["device_name"], "device_state", "open");
                 }
             }
         }
