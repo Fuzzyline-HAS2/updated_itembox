@@ -154,7 +154,7 @@ void PuzzleSolved()
   BlinkTimer.deleteTimer(blinkTimerId); // 전에 사용된 BlinkTimer를 초기화하고 다시 시작하기 위해 종료
   BlinkTimerStart(INNER, YELLOW);       // 내부태그 네오픽셀 노란색 점멸 시작
   GameTimer.deleteTimer(gameTimerId);   // Puzzle함수 -> PuzzleSolved함수 진행되면 이후로는 Activate로 초기화 되지 않게 타이머 종료(기획대로)
-  ptrCurrentMode = RfidLoopInner;       // ptr함수의 주소를 RFIDOuter -> RfidInner로 교체 (내부태그하여 아이템가져가기 위해)
+  ptrCurrentMode = WaitFunc;            // 모터 구동 중에는 내부 태그를 받지 않음. loop()에서 모터 정지+안정화+open 보고가 끝난 뒤 RfidLoopInner로 전환 (ItemTook WiFi 송신이 모터 전류와 겹쳐 brownout 나는 것 방지)
   ptrRfidMode = ItemTook;               // 내부태그되고 CheckingPlayer 함수가 실행되면 ItemTook로 실행되게 주소 변경
 }
 
