@@ -147,14 +147,15 @@ void PuzzleSolved()
   itemBoxSelfOpen = true;                                                         // 태그하면 아이템박스가 open 상태 임으로 메인에서 open 명령 들어와도 재실행되지 않게 제한하는 bool 변수
   Serial.println("PuzzleSolved");
   AllNeoOn(BLUE);
-  BoxOpen();                        // 아박 오픈 (논블로킹, 열리면 loop()에서 Nextion 전환)
+  BoxOpen();                        // 아박 오픈 (논블로킹). 모터를 먼저 돌려 박스가 즉시 열리기 시작한다.
+                                    // 모터 정지 + 전원 안정화 대기 후 loop()에서 화면전환·서버보고를 한다.
+                                    // (WiFi 송신 전류 피크가 모터 전류와 겹쳐 brownout 나는 것을 방지)
   pendingOpenScreen = true;             // BOX Opened 이후 pgItemOpen 전환 예약
   BlinkTimer.deleteTimer(blinkTimerId); // 전에 사용된 BlinkTimer를 초기화하고 다시 시작하기 위해 종료
   BlinkTimerStart(INNER, YELLOW);       // 내부태그 네오픽셀 노란색 점멸 시작
   GameTimer.deleteTimer(gameTimerId);   // Puzzle함수 -> PuzzleSolved함수 진행되면 이후로는 Activate로 초기화 되지 않게 타이머 종료(기획대로)
   ptrCurrentMode = RfidLoopInner;       // ptr함수의 주소를 RFIDOuter -> RfidInner로 교체 (내부태그하여 아이템가져가기 위해)
   ptrRfidMode = ItemTook;               // 내부태그되고 CheckingPlayer 함수가 실행되면 ItemTook로 실행되게 주소 변경
-  has2wifi.Send((String)(const char *)my["device_name"], "device_state", "open"); // 하드웨어 동작 완료 후 서버에 상태 전송
 }
 
 /**
