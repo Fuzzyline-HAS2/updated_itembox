@@ -9,7 +9,7 @@
  *
  */
 
-#define FIRMWARE_VER 16
+#define FIRMWARE_VER 17
 #define PARTITION_VER 5
 #include "updated_itembox.h"
 #include "esp_system.h"
