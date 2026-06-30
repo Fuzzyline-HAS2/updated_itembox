@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1782352635094,
+  "lastScanned": 1782489946915,
   "projectRoot": "C:\\Users\\teamh\\OneDrive\\바탕 화면\\updated_itembox",
   "techStack": {
     "languages": [],
@@ -38,7 +38,7 @@
       "path": "ArduinoOutput",
       "purpose": null,
       "fileCount": 9,
-      "lastAccessed": 1782352635068,
+      "lastAccessed": 1782489946891,
       "keyFiles": [
         "build.options.json",
         "build_opt.h",
@@ -51,14 +51,14 @@
       "path": "build",
       "purpose": "Build output",
       "fileCount": 0,
-      "lastAccessed": 1782352635069,
+      "lastAccessed": 1782489946892,
       "keyFiles": []
     },
     "scripts": {
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 4,
-      "lastAccessed": 1782352635069,
+      "lastAccessed": 1782489946892,
       "keyFiles": [
         "deploy.py",
         "secrets.py",
@@ -67,6 +67,61 @@
       ]
     }
   },
-  "hotPaths": [],
+  "hotPaths": [
+    {
+      "path": "updated_itembox.ino",
+      "accessCount": 14,
+      "lastAccessed": 1782546832362,
+      "type": "file"
+    },
+    {
+      "path": "rfid.ino",
+      "accessCount": 11,
+      "lastAccessed": 1782546330606,
+      "type": "file"
+    },
+    {
+      "path": "Wifi.ino",
+      "accessCount": 7,
+      "lastAccessed": 1782546819436,
+      "type": "file"
+    },
+    {
+      "path": "updated_itembox.h",
+      "accessCount": 4,
+      "lastAccessed": 1782546812062,
+      "type": "file"
+    },
+    {
+      "path": "motor.ino",
+      "accessCount": 4,
+      "lastAccessed": 1782547094135,
+      "type": "file"
+    },
+    {
+      "path": "scripts\\deploy.py",
+      "accessCount": 3,
+      "lastAccessed": 1782546364370,
+      "type": "file"
+    },
+    {
+      "path": "Game_system.ino",
+      "accessCount": 2,
+      "lastAccessed": 1782547000252,
+      "type": "file"
+    },
+    {
+      "path": "Library_and_pin.h",
+      "accessCount": 1,
+      "lastAccessed": 1782530347203,
+      "type": "directory"
+    },
+    {
+      "path": "timer.ino",
+      "accessCount": 1,
+      "lastAccessed": 1782545116583,
+      "type": "file"
+    }
+  ],
   "userDirectives": []
 }
