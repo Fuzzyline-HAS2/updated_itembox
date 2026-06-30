@@ -7,9 +7,16 @@
       "Bash(git merge *)",
       "Bash(git reset *)",
       "Bash(git rev-list *)",
+      "Bash(git push *)",
+      "Bash(git stash *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git checkout *)",
+      "Bash(git *)",
       "Bash(git -C \"C:/Users/teamh/OneDrive/바탕 화면/updated_itembox\" show HEAD:updated_itembox.ino)",
       "PowerShell(git check-ignore *)",
       "PowerShell(git *)",
+      "PowerShell(\\(Get-Item \"C:\\\\Users\\\\이효주\\\\Hide_and_Seek\\\\updated_itembox\\\\update.bin\"\\).Length)",
       "Read(//c/Users/teamh/**)",
       "Read(//c/Users/teamh/Documents/Arduino/**)"
     ]
