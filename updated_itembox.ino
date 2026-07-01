@@ -9,7 +9,7 @@
  *
  */
 
-#define FIRMWARE_VER 20
+#define FIRMWARE_VER 21
 #define PARTITION_VER 6
 #include "updated_itembox.h"
 #include "esp_system.h"
@@ -18,7 +18,7 @@ void setup()
 {
     Serial.begin(115200);
 
-    has2wifi.Setup("badland");
+    has2wifi.Setup("badland_ruins", "Code3824@");
     // has2wifi.Setup("badland_ruins","Code3824@");
     has2wifi.Send((String)(const char*)my["device_name"], "esp_version", String(FIRMWARE_VER)); // 부팅 시 현재 펌웨어 버전을 서버 device.esp_version에 보고 (OTA 재부팅 후에도 자동 갱신)
     TelnetInit();
