@@ -80,6 +80,9 @@ void loop()
                     // 내부 태그가 먼저 처리돼 used가 됐다면 open으로 덮어쓰지 않도록 가드.
                     if (!itemBoxUsed)
                         has2wifi.Send((String)(const char*)my["device_name"], "device_state", "open");
+                    // 박스 오픈 완료 후 HTTP 폴링 타이머 재개.
+                    WifiTimer.deleteTimer(wifiTimerId);
+                    wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);
                     // 모터 정지 + 안정화 + open 보고까지 끝난 뒤에야 내부 태그 처리 활성화.
                     // (PuzzleSolved에서 WaitFunc로 막아둔 것을 여기서 RfidLoopInner로 전환)
                     if (!itemBoxUsed) {

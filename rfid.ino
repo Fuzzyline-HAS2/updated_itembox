@@ -175,14 +175,14 @@ void ItemTook()
     AllNeoOn(BLUE);                                                                                                             // 가져가고 나서 USED일땐 전체 파란색
     has2wifi.Send((String)(const char *)my["device_name"], "device_state", "used");                                             // 아박 device_state = used 처리
     has2wifi.Send((String)(const char *)tag["device_name"], "battery_pack", ("+" + (String)(const char *)my["battery_pack"]));  // 태그한 플레이어 배터리팩 개수 추가
-    has2wifi.Send((String)(const char *)tag["device_name"], "exp", ("+" + (String)(const char *)my["exp_pack"]));               // 태그한 플레이어 경험치 추가
+    // HOTFIX: 서버에서 아이템박스 EXP 지급 처리를 지원할 때까지 전송 중단.
+    // has2wifi.Send((String)(const char *)tag["device_name"], "exp", ("+" + (String)(const char *)my["exp_pack"]));
     has2wifi.Send((String)(const char *)my["device_name"], "battery_pack", ("-" + (String)(const char *)my["battery_pack"]));   // 태그된 아박 배터리팩 개수 감소
     has2wifi.Send((String)(const char *)my["device_name"], "exp_pack", ("-" + (String)(const char *)my["exp_pack"]));           // 태그된 아박 경험치 감소
     BlinkTimer.deleteTimer(blinkTimerId);                                                                                       // 내부태그 황색 점멸  종료
     itemBoxUsed = true;                                                                                                         // used 명령 들어와도 재실행 되지 않게 제한하는 bool 변수
     ptrCurrentMode = WaitFunc;                                                                                                  // ptr 함수의 실행이 null로 변환
     ptrRfidMode = WaitFunc;                                                                                                     // ptr 함수의 실행이 null로 변환
-    wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);                                                            // 아이템 획득 완료 후 WiFi 타이머 재개
   }
   else                                                  // 태그한 플레이어가 더이상 배터리팩을 소지할 수 없을 때 실행
   {
