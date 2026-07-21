@@ -79,6 +79,9 @@ void DataChanged()
             BoxOpen();
             sendCommand("page pgSurvivorLose");
         }
+        else if((String)(const char*)my["device_state"] == "solving") {
+            // 펌웨어가 설정하는 상태: 서버에서 수신 시 무시 (재부팅 잔류 케이스)
+        }
         else if((String)(const char*)my["device_state"] == "github") {
             ota.check();
         }

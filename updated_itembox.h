@@ -49,7 +49,7 @@ void (*ptrRfidMode)() = WaitFunc;      //rfid모드 저장용 포인터 함수
 unsigned long puzzleStartTime = 0; 
 enum {VIBESTREGNTH = 0, ANSWER, RANGE};
 enum {ANSWER_CNT = 0, ANSWER_RANGE, VIBRATION_RANGE};
-int modeValue[3][5] = { {160,90,70,50,0},        // VIBESTREGNTH (모터 세기): 0~255 설정 가능
+int modeValue[3][5] = { {210,160,100,0,0},        // VIBESTREGNTH (모터 세기): 0~255 설정 가능
                          {13,43,21,0,0},        // ANSWER (Puzzle정답) 0 ~ 95 설정가능
                          {5,2,5,0,0}};          // RANGE {ANSWER_CNT, ANSWER_RANGE, VIBRATION_RANGE } -> 정답개수, 정답핀 범위, 진동 범위
 

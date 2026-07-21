@@ -113,6 +113,7 @@ void StartPuzzle()
   puzzleMode = true;
   answerCnt = 0;
   rfidLastSeenTime = millis();        // RFID 이탈 감지 기준 시각 초기화
+  has2wifi.Send((String)(const char*)my["device_name"], "device_state", "solving"); // OS battery_pack 수정 차단용
   WifiTimer.deleteTimer(wifiTimerId); // 퍼즐 중 WiFi 통신 완전 차단
   GameTimer.deleteTimer(gameTimerId);
   gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc); // 퍼즐 진입 시 비입력 리셋 타이머 시작

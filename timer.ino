@@ -18,6 +18,7 @@ void GameTimerFunc(){
     GameTimer.deleteTimer(gameTimerId);
     WifiTimer.deleteTimer(wifiTimerId);
     wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc);
+    has2wifi.Send((String)(const char*)my["device_name"], "device_state", "activate"); // 퍼즐 타임아웃 시 solving 상태 해제
     detachInterrupt(encoderPinA);
     detachInterrupt(encoderPinB);
     encoderValue = 165;
