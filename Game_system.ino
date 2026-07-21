@@ -23,6 +23,7 @@ void Puzzle(void)
         detachInterrupt(encoderPinB);
         WifiTimer.deleteTimer(wifiTimerId);
         wifiTimerId = WifiTimer.setInterval(wifiTime, WifiIntervalFunc); // 퍼즐 일시정지 시 WiFi 재개
+        has2wifi.Send((String)(const char*)my["device_name"], "device_state", "activate"); // 퍼즐 일시정지 → solving 해제
         ptrCurrentMode = RfidLoopOutter;
         ptrRfidMode = ResumePuzzle;
         return;

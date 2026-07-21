@@ -131,6 +131,7 @@ void ResumePuzzle()
   Serial.println("ResumePuzzle - answerCnt: " + String(answerCnt));
   puzzleMode = true;
   rfidLastSeenTime = millis();
+  has2wifi.Send((String)(const char*)my["device_name"], "device_state", "solving"); // 퍼즐 재진입 → solving 재전송
   WifiTimer.deleteTimer(wifiTimerId); // 퍼즐 중 WiFi 통신 완전 차단
   GameTimer.deleteTimer(gameTimerId);
   gameTimerId = GameTimer.setInterval(puzzleResetTime, GameTimerFunc); // 재진입 시 비입력 타이머 재시작
