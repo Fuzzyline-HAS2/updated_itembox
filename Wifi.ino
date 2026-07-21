@@ -171,7 +171,7 @@ void ReadyFunc(void)
     UpdateBrightness();
     AllNeoOn(RED);
     BoxClose();
-    ptrCurrentMode = WaitFunc;
+    ptrCurrentMode = ReadyOutterLoop;
     ptrRfidMode = WaitFunc;
     itemBoxSelfOpen = false;    //퍼즐함수 성공했는지 확인하는 변수초기화
     itemBoxUsed = false;        //박스 사용했는지 확인하는 변수 초기화

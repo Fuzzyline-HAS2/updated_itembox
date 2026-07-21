@@ -51,6 +51,22 @@ void RfidLoopInner()
 /**
  * @brief 아이템박스 외부 pn532 태그 읽어와서 CheckingPlayer로 전송
  */
+void ReadyOutterLoop()
+{
+  uint8_t data[32];
+  byte pn532_buf[64] = {0};
+  if (nfc[OUTPN532].sendCommandCheckAck(pn532_buf, 1))
+  {
+    if (nfc[OUTPN532].startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A))
+    {
+      if (nfc[OUTPN532].ntag2xx_ReadPage(7, data))
+      {
+        sendCommand("wNotActivate.en=1");
+      }
+    }
+  }
+}
+
 void RfidLoopOutter()
 {
   uint8_t uid[3][7] = {{0, 0, 0, 0, 0, 0, 0},
