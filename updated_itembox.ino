@@ -9,7 +9,7 @@
  *
  */
 
-#define FIRMWARE_VER 32
+#define FIRMWARE_VER 33
 #define PARTITION_VER 8
 #include "updated_itembox.h"
 #include "esp_system.h"
@@ -17,6 +17,7 @@
 void setup()
 {
     Serial.begin(115200);
+    has2wifi.SetDebugPrint(&Serial); // 라이브러리 로그를 DebugSerial(UART0+텔넷)로 보냄. 전역 Serial은 begin되지 않아 출력이 버려짐
 
     // has2wifi.Setup("badland");
     has2wifi.Setup("city");
